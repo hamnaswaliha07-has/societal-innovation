@@ -1,0 +1,537 @@
+{% extends "base.html" %}
+
+{% block title %}
+Citizen Portal | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .citizen-page {
+        min-height: 85vh;
+        padding: 45px 20px 70px;
+        background: #eef7ff;
+    }
+
+    .citizen-container {
+        width: 90%;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    /* =========================
+       WELCOME HERO
+       ========================= */
+
+    .welcome-card {
+        background: linear-gradient(
+            135deg,
+            #172554,
+            #1d4ed8,
+            #2563eb
+        );
+
+        color: white;
+        padding: 42px 48px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+
+        box-shadow:
+            0 12px 30px rgba(37, 99, 235, 0.20);
+
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-card::after {
+        content: "";
+        position: absolute;
+
+        width: 350px;
+        height: 350px;
+
+        right: -120px;
+        top: -180px;
+
+        background: rgba(255,255,255,0.08);
+
+        border-radius: 50%;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 2;
+
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .welcome-icon {
+        width: 82px;
+        height: 82px;
+
+        background: white;
+        color: #2563eb;
+
+        border-radius: 50%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 40px;
+
+        flex-shrink: 0;
+    }
+
+    .welcome-card h1 {
+        margin: 0;
+        font-size: 38px;
+        color: white;
+        font-weight: 700;
+    }
+
+    .welcome-card p {
+        margin: 8px 0 0;
+        font-size: 20px;
+        color: #e0ecff;
+    }
+
+
+    /* =========================
+       COMMON CARD
+       ========================= */
+
+    .portal-card {
+        background: white;
+        padding: 32px;
+        border-radius: 18px;
+
+        margin-bottom: 28px;
+
+        box-shadow:
+            0 6px 20px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        margin-top: 0;
+        margin-bottom: 25px;
+
+        color: #172554;
+        font-size: 25px;
+    }
+
+    .section-icon {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #dbeafe;
+        color: #2563eb;
+
+        border-radius: 50%;
+
+        font-size: 21px;
+    }
+
+
+    /* =========================
+       ACCOUNT CARDS
+       ========================= */
+
+    .account-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(220px, 1fr));
+
+        gap: 18px;
+    }
+
+    .account-item {
+        background: #f1f8ff;
+
+        border: 1px solid #dbeafe;
+
+        padding: 20px;
+
+        border-radius: 13px;
+    }
+
+    .account-label {
+        color: #64748b;
+        font-size: 14px;
+
+        margin-bottom: 7px;
+    }
+
+    .account-value {
+        color: #172554;
+        font-size: 17px;
+        font-weight: 600;
+
+        word-break: break-word;
+    }
+
+
+    /* =========================
+       REPORT PROBLEM
+       ========================= */
+
+    .report-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 35px;
+
+        padding: 38px;
+    }
+
+    .report-content {
+        flex: 1;
+    }
+
+    .report-content h2 {
+        color: #172554;
+        margin-top: 0;
+        font-size: 27px;
+    }
+
+    .report-content p {
+        color: #475569;
+
+        font-size: 17px;
+        line-height: 1.7;
+
+        max-width: 600px;
+    }
+
+    .report-icon-area {
+        width: 210px;
+        height: 170px;
+
+        background: #eff6ff;
+
+        border-radius: 20px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 80px;
+
+        flex-shrink: 0;
+    }
+
+    .report-button {
+        display: inline-block;
+
+        background: #2563eb;
+        color: white;
+
+        text-decoration: none;
+
+        padding: 14px 26px;
+
+        border-radius: 9px;
+
+        font-size: 16px;
+        font-weight: 600;
+
+        transition: 0.2s;
+    }
+
+    .report-button:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================
+       SUBMISSIONS
+       ========================= */
+
+    .submission-card {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 25px;
+    }
+
+    .submission-text h2 {
+        color: #172554;
+        margin-top: 0;
+        font-size: 25px;
+    }
+
+    .submission-text p {
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    .dashboard-button {
+        display: inline-block;
+
+        background: white;
+        color: #2563eb;
+
+        text-decoration: none;
+
+        padding: 13px 22px;
+
+        border: 1px solid #bfdbfe;
+
+        border-radius: 9px;
+
+        font-weight: 600;
+
+        white-space: nowrap;
+    }
+
+    .dashboard-button:hover {
+        background: #eff6ff;
+    }
+
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 700px) {
+
+        .citizen-page {
+            padding: 30px 12px 50px;
+        }
+
+        .citizen-container {
+            width: 95%;
+        }
+
+        .welcome-card {
+            padding: 30px 25px;
+        }
+
+        .welcome-content {
+            align-items: flex-start;
+        }
+
+        .welcome-card h1 {
+            font-size: 28px;
+        }
+
+        .welcome-card p {
+            font-size: 17px;
+        }
+
+        .welcome-icon {
+            width: 65px;
+            height: 65px;
+            font-size: 30px;
+        }
+
+        .report-card,
+        .submission-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .report-icon-area {
+            width: 100%;
+            height: 130px;
+        }
+
+        .dashboard-button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+</style>
+
+
+<section class="citizen-page">
+
+    <div class="citizen-container">
+
+
+        <!-- =========================
+             WELCOME
+             ========================= -->
+
+        <div class="welcome-card">
+
+            <div class="welcome-content">
+
+                <div class="welcome-icon">
+                    👤
+                </div>
+
+                <div>
+
+                    <h1>
+                        Welcome, {{ session.get("user_name") }}!
+                    </h1>
+
+                    <p>
+                        Citizen Portal
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ACCOUNT
+             ========================= -->
+
+        <div class="portal-card">
+
+            <h2 class="section-title">
+
+                <span class="section-icon">
+                    👤
+                </span>
+
+                Your Account
+
+            </h2>
+
+
+            <div class="account-grid">
+
+
+                <div class="account-item">
+
+                    <div class="account-label">
+                        Name
+                    </div>
+
+                    <div class="account-value">
+                        {{ session.get("user_name") }}
+                    </div>
+
+                </div>
+
+
+                <div class="account-item">
+
+                    <div class="account-label">
+                        Email
+                    </div>
+
+                    <div class="account-value">
+                        {{ session.get("user_email") }}
+                    </div>
+
+                </div>
+
+
+                <div class="account-item">
+
+                    <div class="account-label">
+                        Account Type
+                    </div>
+
+                    <div class="account-value">
+                        👤 Citizen
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             REPORT PROBLEM
+             ========================= -->
+
+        <div class="portal-card report-card">
+
+
+            <div class="report-content">
+
+                <h2>
+                    📢 Report a Problem
+                </h2>
+
+                <p>
+                    Help improve your community by reporting
+                    problems and challenges happening around you.
+                </p>
+
+                <a
+                    href="/problem"
+                    class="report-button"
+                >
+                    📢 Report a Problem
+                </a>
+
+            </div>
+
+
+            <div class="report-icon-area">
+
+                📋
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =========================
+             SUBMISSIONS
+             ========================= -->
+
+        <div class="portal-card submission-card">
+
+
+            <div class="submission-text">
+
+                <h2>
+                    📋 Your Submissions
+                </h2>
+
+                <p>
+                    View the problems you have reported
+                    and check their current status.
+                </p>
+
+            </div>
+
+
+            <a
+                href="/citizen/dashboard"
+                class="dashboard-button"
+            >
+                📋 Open My Dashboard
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+</section>
+
+{% endblock %}

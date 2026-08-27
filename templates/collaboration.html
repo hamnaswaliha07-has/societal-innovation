@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Offer Collaboration{% endblock %}
+
+{% block content %}
+
+<div style="max-width:800px;margin:40px auto;padding:20px;">
+
+    <h1>🤝 Offer Collaboration</h1>
+
+    <p>
+        You are offering industry support for:
+    </p>
+
+    <div style="
+        background:#f5f7fa;
+        padding:20px;
+        border-radius:12px;
+        margin:20px 0;
+    ">
+
+        <h2>{{ project["project_title"] }}</h2>
+
+        <p>
+            {{ project["project_description"] }}
+        </p>
+
+        <p>
+            <strong>Category:</strong>
+            {{ project["challenge_category"] }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ project["status"] }}
+        </p>
+
+    </div>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>
+            How can your industry support this project?
+        </label>
+
+        <textarea
+            name="message"
+            rows="6"
+            placeholder="Example: We can provide technology, mentoring, funding or implementation support."
+            style="
+                width:100%;
+                padding:12px;
+                margin-top:8px;
+                margin-bottom:20px;
+                box-sizing:border-box;
+            "
+            required
+        ></textarea>
+
+        <button
+            type="submit"
+            style="
+                padding:12px 25px;
+                border:none;
+                border-radius:8px;
+                cursor:pointer;
+            "
+        >
+            🤝 Send Collaboration Offer
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

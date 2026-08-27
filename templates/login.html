@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Societal Innovation Portal{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 80vh;
+    padding: 60px 20px;
+    background: #f5f7fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+">
+
+    <div style="
+        width: 100%;
+        max-width: 450px;
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    ">
+
+        <div style="text-align: center;">
+
+            <h1 style="margin-top: 0;">
+                🔐 Login
+            </h1>
+
+            <p style="color: #666;">
+                Sign in to access your Societal Innovation Portal.
+            </p>
+
+        </div>
+
+
+        {% if error %}
+
+        <div style="
+            background: #ffe8e8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #b00020;
+        ">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            <label>
+                <strong>Email</strong>
+            </label>
+
+            <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                "
+            >
+
+
+            <label>
+                <strong>Password</strong>
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                "
+            >
+
+
+            <label>
+                <strong>Login as</strong>
+            </label>
+
+            <select
+                name="role"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                "
+            >
+
+                <option value="">Select your role</option>
+                <option value="citizen">👤 Citizen</option>
+                <option value="university">🎓 University</option>
+                <option value="industry">🏢 Industry</option>
+                <option value="admin">Admin</option>
+            </select>
+
+
+            <button
+                type="submit"
+                style="
+                    width: 100%;
+                    padding: 14px;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 16px;
+                "
+            >
+                Login
+            </button>
+            <div style="
+    margin-top: 15px;
+    text-align: center;
+">
+
+    <a
+        href="{{ url_for('forgot_password') }}"
+        style="
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        "
+    >
+        Forgot Password?
+    </a>
+
+</div>
+
+        </form>
+
+
+        <div style="
+            text-align: center;
+            margin-top: 25px;
+        ">
+
+            <p>
+                Don't have an account?
+            </p>
+
+            <a href="/register">
+                Create an Account
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

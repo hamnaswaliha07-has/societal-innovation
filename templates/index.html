@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    padding: 80px 20px;
+    text-align: center;
+">
+
+    <div class="container">
+
+        <h1 style="
+            font-size: 48px;
+            margin-bottom: 20px;
+        ">
+            Turn Problems Into Solutions
+        </h1>
+
+        <p style="
+            font-size: 20px;
+            line-height: 1.6;
+            max-width: 750px;
+            margin: auto;
+        ">
+            Connecting communities, universities and industries
+            to solve real-world societal challenges.
+        </p>
+
+        <a href="/citizen"
+           style="
+               display: inline-block;
+               margin-top: 35px;
+               background: #2563eb;
+               color: white;
+               padding: 15px 28px;
+               border-radius: 8px;
+               text-decoration: none;
+               font-size: 17px;
+           ">
+            Report a Problem
+        </a>
+
+        <div style="
+            margin-top: 70px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        ">
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                width: 250px;
+            ">
+
+                <h2>👤 Citizens</h2>
+
+                <p>
+                    Report real-world problems
+                    from your community.
+                </p>
+
+            </div>
+
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                width: 250px;
+            ">
+
+                <h2>🎓 Universities</h2>
+
+                <p>
+                    Discover challenges and
+                    develop innovative solutions.
+                </p>
+
+            </div>
+
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                width: 250px;
+            ">
+
+                <h2>🏢 Industries</h2>
+
+                <p>
+                    Support projects through
+                    technology and collaboration.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

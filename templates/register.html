@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Societal Innovation Portal{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 80vh;
+    padding: 60px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+">
+
+    <div style="text-align: center;">
+
+        <h1 style="margin-top: 0;">
+            📝 Create Account
+        </h1>
+
+        <p style="color: #666;">
+            Join the Societal Innovation Portal.
+        </p>
+
+    </div>
+
+    {% if error %}
+
+    <div style="
+        background: #ffe8e8;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #b00020;
+    ">
+        {{ error }}
+    </div>
+
+    {% endif %}
+
+    <form method="POST">
+
+        <label>
+            <strong>Full Name</strong>
+        </label>
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Enter your full name"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+        <label>
+            <strong>Email</strong>
+        </label>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+        <label>
+            <strong>Phone</strong>
+        </label>
+
+        <input
+            type="tel"
+            name="phone"
+            placeholder="Enter your phone number"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+        <label>
+            <strong>Address / Locality</strong>
+        </label>
+
+        <textarea
+            name="address"
+            placeholder="Enter your address or locality"
+            rows="3"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        ></textarea>
+
+        <label>
+            <strong>District</strong>
+        </label>
+
+        <input
+            type="text"
+            name="district"
+            placeholder="Enter your district"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+        <label>
+            <strong>Password</strong>
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Create a password"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 18px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+        <label>
+            <strong>Account Type</strong>
+        </label>
+
+        <select
+            name="role"
+            required
+            style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 8px;
+                margin-bottom: 25px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            "
+        >
+
+            <option value="">
+                Select account type
+            </option>
+
+            <option value="citizen">
+                👤 Citizen
+            </option>
+
+            <option value="university">
+                🎓 University
+            </option>
+
+            <option value="industry">
+                🏢 Industry
+            </option>
+
+        </select>
+
+        <button
+            type="submit"
+            style="
+                width: 100%;
+                padding: 14px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+            "
+        >
+            Create Account
+        </button>
+
+    </form>
+
+    <div style="
+        text-align: center;
+        margin-top: 25px;
+    ">
+
+        <p>
+            Already have an account?
+        </p>
+
+        <a href="/login">
+            Login
+        </a>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}

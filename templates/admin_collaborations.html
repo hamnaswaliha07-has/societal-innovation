@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Collaborations
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+    <div style="
+        max-width: 1100px;
+        margin: auto;
+    ">
+
+        <div style="
+            background: linear-gradient(135deg, #172554, #2563eb);
+            padding: 30px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 25px;
+        ">
+
+            <h1>🤝 Collaboration Monitoring</h1>
+
+            <p>
+                Monitor collaboration between universities and industries.
+            </p>
+
+        </div>
+
+
+        {% if collaborations %}
+
+            {% for collaboration in collaborations %}
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            ">
+
+                <h2 style="color: #172554;">
+                    {{ collaboration["project_title"] or "Project" }}
+                </h2>
+
+                <p>
+                    <strong>🎓 University:</strong>
+                    {{ collaboration["university_name"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>🏢 Industry:</strong>
+                    {{ collaboration["industry_name"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>💬 Message:</strong>
+                    {{ collaboration["message"] or "No message" }}
+                </p>
+
+                <p>
+                    <strong>📊 Status:</strong>
+
+                    {% if collaboration["status"] == "Accepted" %}
+
+                        <span style="
+                            color: #15803d;
+                            font-weight: bold;
+                        ">
+                            ✅ Accepted
+                        </span>
+
+                    {% elif collaboration["status"] == "Rejected" %}
+
+                        <span style="
+                            color: #b91c1c;
+                            font-weight: bold;
+                        ">
+                            ❌ Rejected
+                        </span>
+
+                    {% else %}
+
+                        <span style="
+                            color: #b45309;
+                            font-weight: bold;
+                        ">
+                            ⏳ Pending
+                        </span>
+
+                    {% endif %}
+
+                </p>
+
+                <p style="
+                    color: #64748b;
+                    font-size: 14px;
+                ">
+                    Created:
+                    {{ collaboration["created_at"] }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div style="
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+            ">
+
+                <h3>No collaborations found.</h3>
+
+            </div>
+
+        {% endif %}
+
+
+        <div style="
+            text-align: center;
+            margin-top: 30px;
+        ">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                style="
+                    color: #2563eb;
+                    text-decoration: none;
+                    font-weight: bold;
+                "
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

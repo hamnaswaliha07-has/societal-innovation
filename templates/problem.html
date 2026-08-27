@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}
+Report a Problem | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    padding: 60px 20px;
+    background: #eaf4ff;
+    min-height: 80vh;
+">
+
+    <div class="container">
+
+        <div style="
+            max-width: 800px;
+            margin: auto;
+        ">
+
+            <div style="
+                text-align: center;
+                margin-bottom: 30px;
+            ">
+
+                <h1 style="
+                    color: #173b6c;
+                    margin-bottom: 10px;
+                ">
+                    📝 Report a Problem
+                </h1>
+
+                <p style="
+                    font-size: 18px;
+                    line-height: 1.6;
+                    color: #52708f;
+                ">
+                    Tell us about the problem in your community.
+                    Your report can help connect the challenge
+                    with people who can create a solution.
+                </p>
+
+                <div style="
+                    display: inline-block;
+                    background: #dff1ff;
+                    color: #1769aa;
+                    padding: 10px 18px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    margin-top: 10px;
+                ">
+                    👤 Your account details will be added automatically
+                </div>
+
+            </div>
+
+
+            <div style="
+                background: #f5faff;
+                padding: 35px;
+                border-radius: 18px;
+                box-shadow: 0 8px 25px rgba(30, 90, 158, 0.10);
+                border: 1px solid #d6e8f7;
+            ">
+
+                <h2 style="
+                    color: #173b6c;
+                    margin-top: 0;
+                ">
+                    Problem Details
+                </h2>
+
+                <p style="
+                    color: #52708f;
+                    margin-bottom: 25px;
+                ">
+                    Please provide information about the community
+                    problem you want to report.
+                </p>
+
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+
+                    <!-- PROBLEM TITLE -->
+
+                    <label>
+                        <strong>Problem Title</strong>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Example: Lack of clean drinking water"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+
+                    <!-- DESCRIPTION -->
+
+                    <label>
+                        <strong>Description</strong>
+                    </label>
+
+                    <textarea
+                        name="description"
+                        placeholder="Describe the problem in detail..."
+                        rows="6"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                            font-family:inherit;
+                            resize:vertical;
+                        "
+                    ></textarea>
+
+
+                    <!-- CATEGORY -->
+
+                    <label>
+                        <strong>Category</strong>
+                    </label>
+
+                    <select
+                        name="category"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+                        <option value="">
+                            Select a category
+                        </option>
+
+                        <option value="Education">
+                            Education
+                        </option>
+
+                        <option value="Healthcare">
+                            Healthcare
+                        </option>
+
+                        <option value="Agriculture">
+                            Agriculture
+                        </option>
+
+                        <option value="Water">
+                            Water
+                        </option>
+
+                        <option value="Environment">
+                            Environment
+                        </option>
+
+                        <option value="Transportation">
+                            Transportation
+                        </option>
+
+                        <option value="Waste Management">
+                            Waste Management
+                        </option>
+
+                        <option value="Public Safety">
+                            Public Safety
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+
+                    <!-- PRIORITY -->
+
+                    <label>
+                        <strong>Priority</strong>
+                    </label>
+
+                    <select
+                        name="priority"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+                        <option value="">
+                            Select priority
+                        </option>
+
+                        <option value="Low">
+                            Low
+                        </option>
+
+                        <option value="Medium">
+                            Medium
+                        </option>
+
+                        <option value="High">
+                            High
+                        </option>
+
+                        <option value="Critical">
+                            Critical
+                        </option>
+
+                    </select>
+
+
+                    <!-- DISTRICT -->
+
+                    <label>
+                        <strong>Problem Location / District</strong>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="problem_district"
+                        placeholder="Where is the problem located?"
+                        required
+                        style="
+                            width:100%;
+                            padding:13px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+
+                    <!-- PHOTO -->
+
+                    <label>
+                        <strong>Upload Photo</strong>
+                    </label>
+
+                    <input
+                        type="file"
+                        name="photo"
+                        accept="image/*"
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin:8px 0 20px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+
+                    <!-- VIDEO -->
+
+                    <label>
+                        <strong>Upload Video</strong>
+                    </label>
+
+                    <input
+                        type="file"
+                        name="video"
+                        accept="video/*"
+                        style="
+                            width:100%;
+                            padding:12px;
+                            margin:8px 0 25px;
+                            border:1px solid #b9d4ed;
+                            border-radius:8px;
+                            background:#f0f7ff;
+                            box-sizing:border-box;
+                        "
+                    >
+
+
+                    <!-- SUBMIT -->
+
+                    <button
+                        type="submit"
+                        style="
+                            width:100%;
+                            background:linear-gradient(
+                                135deg,
+                                #1769aa,
+                                #2389c9
+                            );
+                            color:white;
+                            padding:15px;
+                            border:none;
+                            border-radius:10px;
+                            font-size:16px;
+                            font-weight:600;
+                            cursor:pointer;
+                        "
+                    >
+                        🚀 Submit Problem
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

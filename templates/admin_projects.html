@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - University Projects
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+    <div style="
+        max-width: 1100px;
+        margin: auto;
+    ">
+
+        <div style="
+            background: linear-gradient(135deg, #172554, #2563eb);
+            padding: 30px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 25px;
+        ">
+
+            <h1>🎓 University Projects</h1>
+
+            <p>
+                Monitor projects created by universities.
+            </p>
+
+        </div>
+
+
+        {% if projects %}
+
+            {% for project in projects %}
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            ">
+
+                <h2 style="color: #172554;">
+                    {{ project["title"] }}
+                </h2>
+
+                <p>
+                    <strong>University:</strong>
+                    {{ project["university_name"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>Challenge:</strong>
+                    {{ project["challenge_title"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>Category:</strong>
+                    {{ project["challenge_category"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>Priority:</strong>
+                    {{ project["challenge_priority"] or "Not available" }}
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    {{ project["description"] or "Not provided" }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div style="
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+            ">
+
+                <h3>No university projects found.</h3>
+
+            </div>
+
+        {% endif %}
+
+
+        <div style="
+            text-align: center;
+            margin-top: 30px;
+        ">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                style="
+                    color: #2563eb;
+                    text-decoration: none;
+                    font-weight: bold;
+                "
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create University Project | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+    <div style="
+        max-width: 1000px;
+        margin: auto;
+    ">
+
+        <!-- HEADER -->
+
+        <div style="
+            background: #e0f2fe;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #bae6fd;
+        ">
+
+            <h1 style="
+                margin-top: 0;
+                color: #0c4a6e;
+            ">
+                🎓 Create University Project
+            </h1>
+
+            <p style="
+                color: #334155;
+                font-size: 17px;
+                margin-bottom: 0;
+                line-height: 1.6;
+            ">
+                Create a university project based on the selected
+                societal challenge.
+            </p>
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        {% if error %}
+
+        <div style="
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #fecaca;
+        ">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <!-- CHALLENGE INFORMATION -->
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        ">
+
+            <h2 style="
+                margin-top: 0;
+                color: #172554;
+            ">
+                Citizen Challenge
+            </h2>
+
+            <h3 style="
+                font-size: 25px;
+                color: #1e3a8a;
+                margin-bottom: 15px;
+            ">
+                {{ submission["title"] }}
+            </h3>
+
+            <p style="
+                color: #475569;
+                line-height: 1.7;
+            ">
+                {{ submission["description"] }}
+            </p>
+
+
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-top: 25px;
+            ">
+
+                <div style="
+                    background: #eff6ff;
+                    padding: 18px;
+                    border-radius: 10px;
+                ">
+                    <strong>Category</strong>
+
+                    <div style="
+                        margin-top: 6px;
+                        color: #1e3a8a;
+                    ">
+                        {{ submission["category"] }}
+                    </div>
+                </div>
+
+
+                <div style="
+                    background: #eff6ff;
+                    padding: 18px;
+                    border-radius: 10px;
+                ">
+                    <strong>Priority</strong>
+
+                    <div style="
+                        margin-top: 6px;
+                        color: #1e3a8a;
+                    ">
+                        {{ submission["priority"] }}
+                    </div>
+                </div>
+
+
+                <div style="
+                    background: #eff6ff;
+                    padding: 18px;
+                    border-radius: 10px;
+                ">
+                    <strong>District</strong>
+
+                    <div style="
+                        margin-top: 6px;
+                        color: #1e3a8a;
+                    ">
+                        {{ submission["district"] }}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBMITTED EVIDENCE -->
+
+        {% if submission["photo"] or submission["video"] %}
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        ">
+
+            <h2 style="
+                margin-top: 0;
+                color: #172554;
+            ">
+                📎 Submitted Evidence
+            </h2>
+
+
+            <!-- PHOTO -->
+
+            {% if submission["photo"] %}
+
+            <div style="
+                margin-top: 20px;
+            ">
+
+                <h3 style="
+                    color: #334155;
+                ">
+                    📷 Submitted Image
+                </h3>
+
+                <img
+                    src="{{ url_for('uploaded_file', filename=submission['photo']) }}"
+                    alt="Citizen submitted image"
+                    style="
+                        display: block;
+                        max-width: 100%;
+                        max-height: 500px;
+                        border-radius: 12px;
+                        border: 1px solid #e2e8f0;
+                        margin-top: 10px;
+                    "
+                >
+
+            </div>
+
+            {% endif %}
+
+
+       <!-- VIDEO -->
+
+{% if submission["video"] %}
+
+<div style="
+    margin-top: 30px;
+">
+
+    <h3 style="
+        color: #334155;
+    ">
+        🎥 Submitted Video
+    </h3>
+
+    <video
+        controls
+        preload="metadata"
+        style="
+            display: block;
+            width: 100%;
+            max-width: 800px;
+            max-height: 500px;
+            border-radius: 12px;
+            background: #0f172a;
+            margin-top: 10px;
+        "
+    >
+        <source
+            src="{{ url_for('uploaded_file', filename=submission['video']) }}"
+            type="video/mp4"
+        >
+
+        Your browser does not support video playback.
+    </video>
+
+    <a
+        href="{{ url_for('uploaded_file', filename=submission['video']) }}"
+        target="_blank"
+        style="
+            display: inline-block;
+            margin-top: 10px;
+            color: #2563eb;
+            font-weight: bold;
+            text-decoration: none;
+        "
+    >
+        ▶ Open Video in New Tab
+    </a>
+
+</div>
+
+{% endif %}
+
+        </div>
+
+        {% else %}
+
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            color: #64748b;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        ">
+            No photo or video was submitted with this challenge.
+        </div>
+
+        {% endif %}
+
+
+        <!-- PROJECT FORM -->
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        ">
+
+            <h2 style="
+                margin-top: 0;
+                color: #172554;
+            ">
+                🏫 University Project Details
+            </h2>
+
+            <p style="
+                color: #64748b;
+                line-height: 1.6;
+            ">
+                Enter the details of the project your university
+                will develop to address this societal challenge.
+            </p>
+
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'create_project',
+                    submission_id=submission['id']
+                ) }}"
+            >
+
+                <!-- PROJECT TITLE -->
+
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #334155;
+                    margin-top: 25px;
+                    margin-bottom: 8px;
+                ">
+                    Project Title *
+                </label>
+
+                <input
+                    type="text"
+                    name="project_title"
+                    required
+                    placeholder="Enter project title"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 13px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 8px;
+                        font-size: 15px;
+                    "
+                >
+
+
+                <!-- DESCRIPTION -->
+
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #334155;
+                    margin-top: 25px;
+                    margin-bottom: 8px;
+                ">
+                    Project Description
+                </label>
+
+                <textarea
+                    name="project_description"
+                    rows="6"
+                    placeholder="Describe how your university plans to solve this challenge..."
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 13px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 8px;
+                        font-size: 15px;
+                        resize: vertical;
+                    "
+                ></textarea>
+
+
+                <!-- FACULTY -->
+
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #334155;
+                    margin-top: 25px;
+                    margin-bottom: 8px;
+                ">
+                    Faculty Mentor
+                </label>
+
+                <input
+                    type="text"
+                    name="faculty_name"
+                    placeholder="Enter faculty mentor name"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 13px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 8px;
+                        font-size: 15px;
+                    "
+                >
+
+
+                <!-- STUDENT TEAM -->
+
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #334155;
+                    margin-top: 25px;
+                    margin-bottom: 8px;
+                ">
+                    Student Team
+                </label>
+
+                <textarea
+                    name="student_team"
+                    rows="3"
+                    placeholder="Enter student team members"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 13px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 8px;
+                        font-size: 15px;
+                        resize: vertical;
+                    "
+                ></textarea>
+
+
+                <!-- INDUSTRY PARTNER -->
+
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #334155;
+                    margin-top: 25px;
+                    margin-bottom: 8px;
+                ">
+                    Industry Partner
+                </label>
+
+                <input
+                    type="text"
+                    name="industry_partner"
+                    placeholder="Enter industry partner, if any"
+                    style="
+                        width: 100%;
+                        box-sizing: border-box;
+                        padding: 13px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 8px;
+                        font-size: 15px;
+                    "
+                >
+
+
+                <!-- BUTTONS -->
+
+                <div style="
+                    display: flex;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                    margin-top: 30px;
+                ">
+
+                    <button
+                        type="submit"
+                        style="
+                            background: #16a34a;
+                            color: white;
+                            padding: 14px 28px;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            cursor: pointer;
+                        "
+                    >
+                        Create Project
+                    </button>
+
+
+                    <a
+                        href="{{ url_for(
+                            'view_challenge',
+                            submission_id=submission['id']
+                        ) }}"
+                        style="
+                            display: inline-block;
+                            background: #e2e8f0;
+                            color: #334155;
+                            padding: 14px 28px;
+                            border-radius: 8px;
+                            text-decoration: none;
+                        "
+                    >
+                        Back to Challenge
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- DASHBOARD -->
+
+        <div style="
+            text-align: center;
+            margin-top: 25px;
+        ">
+
+            <a
+                href="{{ url_for('university_dashboard') }}"
+                style="
+                    color: #1e3a8a;
+                    text-decoration: none;
+                    font-weight: 600;
+                "
+            >
+                ← Back to University Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
