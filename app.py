@@ -10,7 +10,7 @@ app = Flask(__name__)
 # APP CONFIGURATION
 # =========================================================
 
-app.secret_key = "societal-innovation-demo-key"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
