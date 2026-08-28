@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Project Details
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 1000px;
+    margin: auto;
+">
+
+    <div style="
+        background: linear-gradient(135deg, #172554, #2563eb);
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        margin-bottom: 25px;
+    ">
+
+        <h1 style="color:white;">
+            📄 University Project Details
+        </h1>
+
+        <p>
+            View complete information about this university project.
+        </p>
+
+    </div>
+
+
+    <div style="
+        background:white;
+        padding:30px;
+        border-radius:16px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.06);
+    ">
+
+        <h2 style="color:#172554;">
+            {{ project["project_title"] or "Untitled Project" }}
+        </h2>
+
+        <hr>
+
+        <p>
+            <strong>🎓 University:</strong>
+            {{ project["university_name"] or "Not available" }}
+        </p>
+
+        <p>
+            <strong>📧 University Email:</strong>
+            {{ project["university_email"] or "Not available" }}
+        </p>
+
+        <p>
+            <strong>📝 Challenge:</strong>
+            {{ project["challenge_title"] or "Not available" }}
+        </p>
+
+        <p>
+            <strong>📂 Category:</strong>
+            {{ project["challenge_category"] or "Not available" }}
+        </p>
+
+        <p>
+            <strong>⚠️ Priority:</strong>
+            {{ project["challenge_priority"] or "Not available" }}
+        </p>
+
+        <p>
+            <strong>📊 Project Status:</strong>
+            {{ project["status"] or "Not available" }}
+        </p>
+
+        <h3>📄 Project Description</h3>
+
+        <div style="
+            background:#f8fafc;
+            padding:18px;
+            border-radius:10px;
+            white-space:pre-wrap;
+        ">
+            {{ project["project_description"] or "No project description provided." }}
+        </div>
+
+        <h3>👨‍🏫 Faculty</h3>
+
+        <p>
+            {{ project["faculty_name"] or "Not provided" }}
+        </p>
+
+        <h3>👥 Student Team</h3>
+
+        <p>
+            {{ project["student_team"] or "Not provided" }}
+        </p>
+
+        <h3>🏢 Industry Partner</h3>
+
+        <p>
+            {{ project["industry_partner"] or "Not provided" }}
+        </p>
+
+        <hr>
+
+        <div style="
+            margin-top:25px;
+        ">
+
+            <a
+                href="{{ url_for('admin_projects') }}"
+                style="
+                    background:#2563eb;
+                    color:white;
+                    padding:11px 18px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:600;
+                "
+            >
+                ← Back to University Projects
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}

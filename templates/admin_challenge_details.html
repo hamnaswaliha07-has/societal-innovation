@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Challenge Details
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 40px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 1000px;
+    margin: auto;
+">
+
+    <!-- HEADER -->
+
+    <div style="
+        background: linear-gradient(135deg, #172554, #2563eb);
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        margin-bottom: 25px;
+    ">
+
+        <h1>📝 Challenge Details</h1>
+
+        <p>
+            View and manage this societal challenge.
+        </p>
+
+    </div>
+
+
+    <!-- CHALLENGE INFORMATION -->
+
+    <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    ">
+
+        <h2 style="color: #172554;">
+            {{ challenge["title"] }}
+        </h2>
+
+        <p>
+            <strong>Description:</strong><br>
+            {{ challenge["description"] }}
+        </p>
+
+        <p>
+            <strong>Category:</strong>
+            {{ challenge["category"] }}
+        </p>
+
+        <p>
+            <strong>Priority:</strong>
+            {{ challenge["priority"] }}
+        </p>
+
+        <p>
+            <strong>District:</strong>
+            {{ challenge["district"] }}
+        </p>
+
+        <p>
+            <strong>Address:</strong>
+            {{ challenge["address"] }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ challenge["status"] }}
+        </p>
+
+    </div>
+
+
+    <!-- PHOTO -->
+
+    <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    ">
+
+        <h2>📷 Submitted Photo</h2>
+
+        {% if challenge["photo"] %}
+
+            <img
+                src="{{ url_for('uploaded_file', filename=challenge['photo']) }}"
+                alt="Submitted challenge photo"
+                style="
+                    max-width: 100%;
+                    max-height: 600px;
+                    display: block;
+                    margin: 20px auto;
+                    border-radius: 12px;
+                "
+            >
+
+            <div style="text-align: center;">
+
+                <a
+                    href="{{ url_for('uploaded_file', filename=challenge['photo']) }}"
+                    target="_blank"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background: #2563eb;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                    "
+                >
+                    🔍 Open Photo
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <p>No photo was submitted.</p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- VIDEO -->
+
+    <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    ">
+
+        <h2>🎥 Submitted Video</h2>
+
+        {% if challenge["video"] %}
+
+            <video
+                controls
+                style="
+                    width: 100%;
+                    max-height: 600px;
+                    border-radius: 12px;
+                    margin-top: 15px;
+                "
+            >
+
+                <source
+                    src="{{ url_for('uploaded_file', filename=challenge['video']) }}"
+                    type="video/mp4"
+                >
+
+                Your browser does not support video playback.
+
+            </video>
+
+            <div style="
+                text-align: center;
+                margin-top: 20px;
+            ">
+
+                <a
+                    href="{{ url_for('uploaded_file', filename=challenge['video']) }}"
+                    target="_blank"
+                    style="
+                        display: inline-block;
+                        padding: 12px 20px;
+                        background: #2563eb;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                    "
+                >
+                    ▶️ Open Video
+                </a>
+
+            </div>
+
+        {% else %}
+
+            <p>No video was submitted.</p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div style="
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+        margin-bottom: 40px;
+    ">
+
+        <a
+            href="{{ url_for('admin_challenges') }}"
+            style="
+                padding: 12px 20px;
+                background: #e5e7eb;
+                color: #172554;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: bold;
+            "
+        >
+            ← Back to Challenges
+        </a>
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            style="
+                padding: 12px 20px;
+                background: #2563eb;
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: bold;
+            "
+        >
+            👑 Admin Dashboard
+        </a>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}

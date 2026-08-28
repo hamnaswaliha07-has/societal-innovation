@@ -11,100 +11,143 @@ Home | Societal Innovation Portal
     text-align: center;
 ">
 
-    <div class="container">
+```
+<div class="container">
 
-        <h1 style="
-            font-size: 48px;
-            margin-bottom: 20px;
-        ">
-            Turn Problems Into Solutions
-        </h1>
+    <h1 style="
+        font-size: 48px;
+        margin-bottom: 20px;
+    ">
+        Turn Problems Into Solutions
+    </h1>
 
-        <p style="
-            font-size: 20px;
-            line-height: 1.6;
-            max-width: 750px;
-            margin: auto;
-        ">
-            Connecting communities, universities and industries
-            to solve real-world societal challenges.
-        </p>
+    <p style="
+        font-size: 20px;
+        line-height: 1.6;
+        max-width: 750px;
+        margin: auto;
+    ">
+        Connecting communities, universities and industries
+        to solve real-world societal challenges.
+    </p>
 
-        <a href="/citizen"
-           style="
-               display: inline-block;
-               margin-top: 35px;
-               background: #2563eb;
-               color: white;
-               padding: 15px 28px;
-               border-radius: 8px;
-               text-decoration: none;
-               font-size: 17px;
-           ">
-            Report a Problem
-        </a>
+
+    <!-- MAIN ACTION BUTTONS -->
+
+    <div style="
+        margin-top: 35px;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    ">
+
+        {% if session.get("role") == "admin" %}
+
+            <a href="{{ url_for('admin_dashboard') }}"
+               style="
+                   display: inline-block;
+                   background: #172554;
+                   color: white;
+                   padding: 15px 28px;
+                   border-radius: 8px;
+                   text-decoration: none;
+                   font-size: 17px;
+                   font-weight: bold;
+               ">
+                👑 Admin Dashboard
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('citizen') }}"
+               style="
+                   display: inline-block;
+                   background: #2563eb;
+                   color: white;
+                   padding: 15px 28px;
+                   border-radius: 8px;
+                   text-decoration: none;
+                   font-size: 17px;
+               ">
+                Report a Problem
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- PORTAL INFORMATION -->
+
+    <div style="
+        margin-top: 70px;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        flex-wrap: wrap;
+    ">
+
+        <!-- CITIZENS -->
 
         <div style="
-            margin-top: 70px;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 250px;
         ">
 
-            <div style="
-                background: white;
-                padding: 25px;
-                border-radius: 12px;
-                width: 250px;
-            ">
+            <h2>👤 Citizens</h2>
 
-                <h2>👤 Citizens</h2>
+            <p>
+                Report real-world problems
+                from your community.
+            </p>
 
-                <p>
-                    Report real-world problems
-                    from your community.
-                </p>
-
-            </div>
+        </div>
 
 
-            <div style="
-                background: white;
-                padding: 25px;
-                border-radius: 12px;
-                width: 250px;
-            ">
+        <!-- UNIVERSITIES -->
 
-                <h2>🎓 Universities</h2>
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 250px;
+        ">
 
-                <p>
-                    Discover challenges and
-                    develop innovative solutions.
-                </p>
+            <h2>🎓 Universities</h2>
 
-            </div>
+            <p>
+                Discover challenges and
+                develop innovative solutions.
+            </p>
+
+        </div>
 
 
-            <div style="
-                background: white;
-                padding: 25px;
-                border-radius: 12px;
-                width: 250px;
-            ">
+        <!-- INDUSTRIES -->
 
-                <h2>🏢 Industries</h2>
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 250px;
+        ">
 
-                <p>
-                    Support projects through
-                    technology and collaboration.
-                </p>
+            <h2>🏢 Industries</h2>
 
-            </div>
+            <p>
+                Support projects through
+                technology and collaboration.
+            </p>
 
         </div>
 
     </div>
+
+</div>
+```
 
 </section>
 

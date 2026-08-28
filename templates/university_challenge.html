@@ -186,61 +186,91 @@ Challenge Details | Societal Innovation Portal
         </div>
 
 
-        <!-- MEDIA -->
+       <!-- MEDIA -->
 
-        {% if submission["photo"] or submission["video"] %}
+{% if submission["photo"] or submission["video"] %}
 
-        <div style="
-            background: white;
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-        ">
+<div style="
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+">
 
-            <h2 style="
-                color: #172554;
-                margin-top: 0;
-            ">
-                Submitted Evidence
-            </h2>
+    <h2 style="
+        color: #172554;
+        margin-top: 0;
+    ">
+        Submitted Evidence
+    </h2>
+
+    {% if submission["photo"] %}
+
+    <p>
+        <strong>📷 Photo:</strong>
+    </p>
+
+    <img
+        src="{{ url_for('static', filename='../uploads/' + submission['photo']) }}"
+        alt="Problem photo"
+        style="
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        "
+    >
+
+    {% endif %}
 
 
-            {% if submission["photo"] %}
+    {% if submission["video"] %}
 
-            <p>
-                <strong>Photo:</strong>
-            </p>
+    <p>
+        <strong>🎥 Submitted Video:</strong>
+    </p>
 
-            <img
-                src="{{ url_for('static', filename='../uploads/' + submission['photo']) }}"
-                alt="Problem photo"
-                style="
-                    max-width: 100%;
-                    max-height: 400px;
-                    border-radius: 10px;
-                    margin-bottom: 20px;
-                "
-            >
+    <video
+        controls
+        style="
+            width: 100%;
+            max-width: 700px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        "
+    >
+        <source
+            src="{{ url_for('uploaded_file', filename=submission['video']) }}"
+            type="video/mp4"
+        >
 
-            {% endif %}
+        Your browser does not support video playback.
+    </video>
 
+    <p>
+        <a
+            href="{{ url_for('uploaded_file', filename=submission['video']) }}"
+            target="_blank"
+            style="
+                display: inline-block;
+                background: #2563eb;
+                color: white;
+                padding: 10px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 600;
+            "
+        >
+            ▶️ Open Video
+        </a>
+    </p>
 
-            {% if submission["video"] %}
+    {% endif %}
 
-            <p>
-                <strong>Video:</strong>
-            </p>
+</div>
 
-            <p>
-                {{ submission["video"] }}
-            </p>
-
-            {% endif %}
-
-        </div>
-
-        {% endif %}
+{% endif %}
 
 
         <!-- DECISION -->

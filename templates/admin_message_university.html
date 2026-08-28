@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}
+Message University | Admin
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 750px;
+    margin: auto;
+">
+
+    <div style="
+        background: linear-gradient(135deg, #172554, #2563eb);
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        margin-bottom: 25px;
+    ">
+
+        <h1 style="color: white;">
+            📨 Message University
+        </h1>
+
+        <p>
+            Send an official message or instruction to the university.
+        </p>
+
+    </div>
+
+
+    <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    ">
+
+        <div style="
+            background: #eff6ff;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        ">
+
+            <strong>🎓 University:</strong>
+            {{ university["name"] }}
+
+            <br>
+
+            <strong>📧 Email:</strong>
+            {{ university["email"] }}
+
+        </div>
+
+
+        <form method="POST">
+
+            <input
+                type="hidden"
+                name="project_id"
+                value="{{ project_id }}"
+            >
+
+
+            <div style="margin-bottom: 20px;">
+
+                <label>
+                    <strong>Subject</strong>
+                </label>
+
+                <input
+                    type="text"
+                    name="subject"
+                    placeholder="Enter message subject"
+                    required
+                >
+
+            </div>
+
+
+            <div style="margin-bottom: 20px;">
+
+                <label>
+                    <strong>Message</strong>
+                </label>
+
+                <textarea
+                    name="message"
+                    rows="8"
+                    placeholder="Write your message or instruction to the university..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div style="
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+            ">
+
+                <button
+                    type="submit"
+                    style="
+                        background: #2563eb;
+                        color: white;
+                        padding: 13px 25px;
+                        border-radius: 10px;
+                        font-size: 15px;
+                    "
+                >
+                    📨 Send Message
+                </button>
+
+
+                <a
+                    href="{{ url_for('admin_dashboard') }}"
+                    style="
+                        display: inline-block;
+                        background: #e5e7eb;
+                        color: #172033;
+                        padding: 13px 25px;
+                        border-radius: 10px;
+                        text-decoration: none;
+                        font-weight: 600;
+                    "
+                >
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}
