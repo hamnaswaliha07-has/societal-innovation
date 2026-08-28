@@ -177,6 +177,245 @@ create_database()
 
 
 # =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+
+create_database()
+
+
+# =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+
+create_database()
+
+
+# =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+
+create_database()
+
+
+# =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+
+create_database()
+
+
+# =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+create_database()
+
+
+# =========================================================
+# CREATE DEFAULT ADMIN ACCOUNT
+# =========================================================
+
+def create_default_admin():
+
+    connection = get_database()
+
+    admin = connection.execute("""
+        SELECT id
+        FROM users
+        WHERE email = ?
+        AND role = 'admin'
+    """, ("admin@example.com",)).fetchone()
+
+    if not admin:
+
+        connection.execute("""
+            INSERT INTO users (
+                name,
+                email,
+                password,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            "Admin",
+            "admin@example.com",
+            generate_password_hash("Admin@123"),
+            "admin"
+        ))
+
+        connection.commit()
+
+    connection.close()
+
+
+create_default_admin()
+
+
+# =========================================================
 # HOME
 # =========================================================
 
