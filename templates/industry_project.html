@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Project Details{% endblock %}
+
+{% block content %}
+
+<div style="max-width:900px;margin:40px auto;padding:20px;">
+
+    <h1>📄 {{ project["project_title"] }}</h1>
+
+    <p>
+        {{ project["project_description"] }}
+    </p>
+
+    <hr>
+
+    <h2>Community Challenge</h2>
+
+    <p>
+        <strong>Title:</strong>
+        {{ project["challenge_title"] }}
+    </p>
+
+    <p>
+        <strong>Description:</strong>
+        {{ project["challenge_description"] }}
+    </p>
+
+    <p>
+        <strong>Category:</strong>
+        {{ project["challenge_category"] }}
+    </p>
+
+    <p>
+        <strong>Priority:</strong>
+        {{ project["challenge_priority"] }}
+    </p>
+
+    <p>
+        <strong>District:</strong>
+        {{ project["challenge_district"] }}
+    </p>
+
+    <hr>
+
+    <h2>University Project</h2>
+
+    <p>
+        <strong>Faculty:</strong>
+        {{ project["faculty_name"] }}
+    </p>
+
+    <p>
+        <strong>Student Team:</strong>
+        {{ project["student_team"] }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ project["status"] }}
+    </p>
+
+    <br>
+
+    <a href="{{ url_for('offer_collaboration', project_id=project['id']) }}">
+        🤝 Offer Collaboration
+    </a>
+
+</div>
+
+{% endblock %}

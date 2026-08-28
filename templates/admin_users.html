@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Users
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+    <div style="
+        max-width: 1100px;
+        margin: auto;
+    ">
+
+        <div style="
+            background: linear-gradient(135deg, #172554, #2563eb);
+            padding: 30px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 25px;
+        ">
+
+            <h1>👥 User Management</h1>
+
+            <p>
+                View registered citizens, universities and industries.
+            </p>
+
+        </div>
+
+
+        {% if users %}
+
+        <div style="
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            overflow-x: auto;
+        ">
+
+            <table style="
+                width: 100%;
+                border-collapse: collapse;
+            ">
+
+                <thead>
+
+                    <tr style="
+                        background: #eff6ff;
+                        text-align: left;
+                    ">
+
+                        <th style="padding: 14px;">Name</th>
+                        <th style="padding: 14px;">Email</th>
+                        <th style="padding: 14px;">Phone</th>
+                        <th style="padding: 14px;">District</th>
+                        <th style="padding: 14px;">Role</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for user in users %}
+
+                    <tr style="
+                        border-top: 1px solid #e5e7eb;
+                    ">
+
+                        <td style="padding: 14px;">
+                            {{ user["name"] }}
+                        </td>
+
+                        <td style="padding: 14px;">
+                            {{ user["email"] }}
+                        </td>
+
+                        <td style="padding: 14px;">
+                            {{ user["phone"] or "Not provided" }}
+                        </td>
+
+                        <td style="padding: 14px;">
+                            {{ user["district"] or "Not provided" }}
+                        </td>
+
+                        <td style="padding: 14px;">
+
+                            {% if user["role"] == "admin" %}
+
+                                👑 Admin
+
+                            {% elif user["role"] == "university" %}
+
+                                🎓 University
+
+                            {% elif user["role"] == "industry" %}
+
+                                🏢 Industry
+
+                            {% else %}
+
+                                👤 Citizen
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        ">
+
+            <h3>No users found.</h3>
+
+        </div>
+
+        {% endif %}
+
+
+        <div style="
+            text-align: center;
+            margin-top: 30px;
+        ">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                style="
+                    color: #2563eb;
+                    text-decoration: none;
+                    font-weight: bold;
+                "
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

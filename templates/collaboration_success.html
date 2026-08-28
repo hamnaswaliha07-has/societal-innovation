@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Collaboration Sent{% endblock %}
+
+{% block content %}
+
+<div style="max-width:700px;margin:60px auto;text-align:center;padding:30px;">
+
+    <h1>✅ Collaboration Offer Sent!</h1>
+
+    <p>
+        Your industry collaboration request has been successfully
+        sent to the university.
+    </p>
+
+    <h2>{{ project["project_title"] }}</h2>
+
+    <p>
+        Status: <strong>Pending University Response</strong>
+    </p>
+
+    <br>
+
+    <a href="{{ url_for('industry') }}">
+        ← Back to Industry Dashboard
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin - Sent Messages
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 1000px;
+    margin: auto;
+">
+
+    <div style="
+        background: linear-gradient(135deg, #172554, #7c3aed);
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        margin-bottom: 25px;
+    ">
+
+        <h1 style="color:white; margin-top:0;">
+            📩 Messages Sent to Universities
+        </h1>
+
+        <p style="margin-bottom:0;">
+            View all messages sent by the administrator
+            and check whether universities have read them.
+        </p>
+
+    </div>
+
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+           border-left: 5px solid #7c3aed;
+        ">
+        
+        <div style="
+                display:flex;
+                justify-content:space-between;
+                gap:20px;
+                flex-wrap:wrap;
+            ">
+
+                <h2 style="
+                    margin-top:0;
+                    color:#172554;
+                ">
+                    {{ message["subject"] }}
+                </h2>
+
+
+                {% if message["is_read"] %}
+
+                    <span style="
+                        background:#dcfce7;
+                        color:#15803d;
+                        padding:7px 14px;
+                        border-radius:20px;
+                        height:fit-content;
+                        font-size:13px;
+                        font-weight:bold;
+                    ">
+                        ✓ Read by University
+                    </span>
+
+                {% else %}
+
+                    <span style="
+                        background:#fef3c7;
+                        color:#b45309;
+                        padding:7px 14px;
+                        border-radius:20px;
+                        height:fit-content;
+                        font-size:13px;
+                        font-weight:bold;
+                    ">
+                        ● Not Read Yet
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <p>
+                <strong>🎓 University:</strong>
+                {{ message["university_name"] or "Unknown University" }}
+            </p>
+
+
+            <p>
+                <strong>📧 University Email:</strong>
+                {{ message["university_email"] or "Not available" }}
+            </p>
+
+
+            {% if message["project_title"] %}
+
+            <p>
+                <strong>📄 Related Project:</strong>
+                {{ message["project_title"] }}
+            </p>
+
+            {% endif %}
+
+
+            <div style="
+                background:#f8fafc;
+                padding:18px;
+                border-radius:10px;
+                margin:18px 0;
+                white-space:pre-wrap;
+                line-height:1.6;
+            ">
+                {{ message["message"] }}
+            </div>
+
+
+            <p style="
+                color:#64748b;
+                font-size:13px;
+                margin-bottom:0;
+            ">
+                🕐 Sent: {{ message["created_at"] }}
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div style="
+            background:white;
+            padding:40px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 4px 15px rgba(0,0,0,0.06);
+        ">
+
+            <h2>📭 No Messages Yet</h2>
+
+            <p style="color:#64748b;">
+                Messages sent to universities will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <div style="
+        text-align:center;
+        margin-top:30px;
+    ">
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            style="
+                color:#2563eb;
+                text-decoration:none;
+                font-weight:bold;
+            "
+        >
+            ← Back to Admin Dashboard
+        </a>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}

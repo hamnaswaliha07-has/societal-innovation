@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Industry Dashboard{% endblock %}
+
+{% block content %}
+
+<div style="max-width:1100px;margin:40px auto;padding:20px;">
+
+    <h1>🏢 Industry Dashboard</h1>
+
+    <p>
+        Discover university projects and collaborate through
+        technology, mentoring, funding and implementation.
+    </p>
+
+    <hr>
+
+    <h2>🎓 University Projects</h2>
+
+    {% if projects %}
+
+        {% for project in projects %}
+
+        <div style="
+            background:#f5f7fa;
+            padding:25px;
+            margin-top:20px;
+            border-radius:12px;
+        ">
+
+            <h3>{{ project["project_title"] }}</h3>
+
+            <p>
+                {{ project["project_description"] }}
+            </p>
+
+            <p>
+                <strong>Challenge:</strong>
+                {{ project["challenge_title"] }}
+            </p>
+
+            <p>
+                <strong>Category:</strong>
+                {{ project["challenge_category"] }}
+            </p>
+
+            <p>
+                <strong>Priority:</strong>
+                {{ project["challenge_priority"] }}
+            </p>
+
+            <p>
+                <strong>District:</strong>
+                {{ project["challenge_district"] }}
+            </p>
+
+            <p>
+                <strong>Project Status:</strong>
+                {{ project["status"] }}
+            </p>
+
+            <a href="{{ url_for('industry_project', project_id=project['id']) }}"
+               style="
+               display:inline-block;
+               padding:10px 18px;
+               border-radius:8px;
+               text-decoration:none;
+               margin-right:10px;
+               ">
+                View Project
+            </a>
+{% if project["collaboration_status"] == "Accepted" %}
+
+    <span style="
+        display:inline-block;
+        padding:10px 18px;
+        border-radius:8px;
+        background:#d4edda;
+        color:#155724;
+        margin-left:10px;
+    ">
+        ✅ Collaboration Accepted
+    </span>
+
+{% elif project["collaboration_status"] == "Pending" %}
+
+    <span style="
+        display:inline-block;
+        padding:10px 18px;
+        border-radius:8px;
+        background:#fff3cd;
+        color:#856404;
+        margin-left:10px;
+    ">
+        ⏳ Collaboration Pending
+    </span>
+
+{% else %}
+
+    <a href="{{ url_for('offer_collaboration', project_id=project['id']) }}"
+       style="
+       display:inline-block;
+       padding:10px 18px;
+       border-radius:8px;
+       text-decoration:none;
+       margin-left:10px;
+       ">
+        🤝 Offer Collaboration
+    </a>
+
+{% endif %}
+
+   
+
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div style="
+            padding:30px;
+            background:#f5f7fa;
+            border-radius:12px;
+            margin-top:20px;
+        ">
+
+            <h3>No university projects available yet.</h3>
+
+            <p>
+                Projects created by universities will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

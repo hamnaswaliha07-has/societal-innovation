@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        Societal Innovation Portal
+        {% endblock %}
+    </title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Inter", Arial, sans-serif;
+            background: #eaf4ff;
+            color: #172033;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: "Poppins", Arial, sans-serif;
+            color: #173b6c;
+        }
+
+        a {
+            transition: 0.2s ease;
+        }
+
+        /* =====================================
+           NAVIGATION
+        ===================================== */
+
+        nav {
+            background: linear-gradient(
+                135deg,
+                #123b6d,
+                #1e5a9e
+            );
+
+            padding: 16px 5%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            box-shadow:
+                0 4px 18px rgba(30, 90, 158, 0.20);
+        }
+
+        .logo {
+            color: white;
+            font-family: "Poppins", Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .logo span {
+            color: #b9e6ff;
+        }
+
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 4px;
+        }
+
+        nav a:hover {
+            color: #b9e6ff;
+        }
+
+        /* ADMIN DASHBOARD LINK */
+
+        .admin-dashboard-link {
+            background: #f59e0b;
+            color: #172033 !important;
+            padding: 9px 14px !important;
+            border-radius: 8px;
+            margin-left: 18px;
+        }
+
+        .admin-dashboard-link:hover {
+            background: #fbbf24;
+            color: #172033 !important;
+        }
+
+        /* ADMIN LOGIN LINK */
+
+        .admin-login-link {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.35);
+            padding: 8px 12px !important;
+            border-radius: 8px;
+        }
+
+        .admin-login-link:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* USER BADGE */
+
+        .user-badge {
+            display: inline-block;
+            color: #dbeeff;
+            margin-left: 18px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* MAIN CONTAINER */
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* FORMS */
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            font-family: "Inter", Arial, sans-serif;
+            font-size: 15px;
+            border: 1px solid #b9d4ed;
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #f0f7ff;
+            color: #172033;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2b8ac6;
+            box-shadow:
+                0 0 0 3px rgba(43, 138, 198, 0.12);
+            background: #f8fcff;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* BUTTONS */
+
+        button {
+            border: none;
+            font-family: "Inter", Arial, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 6px 15px rgba(30, 90, 158, 0.18);
+        }
+
+        /* CARDS */
+
+        .card {
+            background: #f5faff;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow:
+                0 8px 25px rgba(30, 90, 158, 0.08);
+            border: 1px solid #d6e8f7;
+        }
+
+        /* SECTION */
+
+        .section {
+            padding: 50px 20px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 800px) {
+
+            nav {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            nav a {
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+
+            .user-badge {
+                display: block;
+                margin: 8px 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         NAVIGATION
+    ===================================== -->
+
+    <nav>
+
+        <div class="logo">
+
+            🌍 Societal
+            <span>Innovation</span>
+
+        </div>
+
+
+        <div>
+
+            <!-- HOME -->
+
+            <a href="/">
+                🏠 Home
+            </a>
+
+
+            {% if session.get("user_id") %}
+
+
+                <!-- =================================
+                     ADMIN
+                ================================= -->
+
+                {% if session.get("user_role") == "admin" %}
+
+                    <a
+                        href="{{ url_for('admin_dashboard') }}"
+                        class="admin-dashboard-link"
+                    >
+                        👑 Admin Dashboard
+                    </a>
+
+
+                <!-- =================================
+                     CITIZEN
+                ================================= -->
+
+                {% elif session.get("user_role") == "citizen" %}
+
+                    <a href="/citizen">
+                        👤 Citizen
+                    </a>
+
+                    <a href="/citizen/dashboard">
+                        📋 Dashboard
+                    </a>
+
+
+                <!-- =================================
+                     UNIVERSITY
+                ================================= -->
+
+                {% elif session.get("user_role") == "university" %}
+
+                    <a href="/university">
+                        🎓 University
+                    </a>
+
+                    <a href="/university/dashboard">
+                        📊 Dashboard
+                    </a>
+
+
+                <!-- =================================
+                     INDUSTRY
+                ================================= -->
+
+                {% elif session.get("user_role") == "industry" %}
+
+                    <a href="/industry">
+                        🏢 Industry
+                    </a>
+
+                {% endif %}
+
+
+                <!-- USER NAME -->
+
+                <span class="user-badge">
+
+                    Welcome,
+                    {{ session.get("user_name") }}
+
+                </span>
+
+
+                <!-- LOGOUT -->
+
+                <a href="/logout">
+
+                    🚪 Logout
+
+                </a>
+
+
+            {% else %}
+
+
+                <!-- =================================
+                     NORMAL LOGIN
+                ================================= -->
+
+                <a href="/login">
+
+                    🔐 Login
+
+                </a>
+
+
+                <!-- =================================
+                     REGISTER
+                ================================= -->
+
+                <a href="/register">
+
+                    📝 Register
+
+                </a>
+
+
+                <!-- =================================
+                     ADMIN LOGIN
+                ================================= -->
+
+                <a
+                    href="{{ url_for('admin_login') }}"
+                    class="admin-login-link"
+                >
+
+                    👑 Admin Login
+
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================
+         PAGE CONTENT
+    ===================================== -->
+
+    {% block content %}
+
+    {% endblock %}
+
+
+</body>
+
+</html>

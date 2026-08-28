@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}
+Citizen Dashboard - Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    padding: 50px 20px;
+">
+
+    <div class="container">
+
+        <h1>
+            👤 Citizen Dashboard
+        </h1>
+
+        <p style="color: #6b7280;">
+            Welcome, {{ session.get("user_name") }}!
+            Here you can report problems and track your submissions.
+        </p>
+
+
+        <!-- ACTION CARDS -->
+
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        ">
+
+
+            <!-- REPORT PROBLEM -->
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            ">
+
+                <h2>
+                    📝 Report a Problem
+                </h2>
+
+                <p>
+                    Report a real-world problem from your community.
+                </p>
+
+                <a
+                    href="/citizen"
+                    style="
+                        display: inline-block;
+                        margin-top: 10px;
+                        padding: 12px 18px;
+                        background: #172554;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                    "
+                >
+                    Report Problem
+                </a>
+
+            </div>
+
+
+            <!-- MY SUBMISSIONS -->
+
+            <div style="
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            ">
+
+                <h2>
+                    📋 My Submissions
+                </h2>
+
+                <p>
+                    View the problems you have already reported.
+                </p>
+
+                <a
+                    href="#submissions"
+                    style="
+                        display: inline-block;
+                        margin-top: 10px;
+                        padding: 12px 18px;
+                        background: #374151;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                    "
+                >
+                    View Submissions
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUBMISSIONS -->
+
+        <div
+            id="submissions"
+            style="
+                margin-top: 40px;
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            "
+        >
+
+            <h2>
+                📋 My Reported Problems
+            </h2>
+
+
+            {% if submissions %}
+
+                {% for submission in submissions %}
+
+                    <div style="
+                        border: 1px solid #e5e7eb;
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin-top: 20px;
+                    ">
+
+                        <h3>
+                            {{ submission["title"] }}
+                        </h3>
+
+                        <p>
+                            {{ submission["description"] }}
+                        </p>
+
+                        <p>
+                            <strong>Category:</strong>
+                            {{ submission["category"] }}
+                        </p>
+
+                        <p>
+                            <strong>Priority:</strong>
+                            {{ submission["priority"] }}
+                        </p>
+
+                        <p>
+                            <strong>District:</strong>
+                            {{ submission["district"] }}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+
+                            <span style="
+                                font-weight: bold;
+                            ">
+                                {{ submission["status"] }}
+                            </span>
+
+                        </p>
+
+                        <p>
+                            <strong>Submission ID:</strong>
+                            {{ submission["id"] }}
+                        </p>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p style="color: #6b7280;">
+                    You haven't submitted any problems yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

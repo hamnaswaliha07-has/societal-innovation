@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create University Project | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 80vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 850px;
+    margin: auto;
+">
+
+    <div style="
+        background: #e0f2fe;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        border: 1px solid #bae6fd;
+    ">
+
+        <h1 style="
+            margin-top: 0;
+            color: #0c4a6e;
+        ">
+            🎓 Create University Project
+        </h1>
+
+        <p style="
+            color: #334155;
+            font-size: 17px;
+            line-height: 1.6;
+        ">
+            Convert an accepted societal challenge into
+            a university project and begin working toward
+            a practical solution.
+        </p>
+
+    </div>
+
+
+    {% if challenge %}
+
+    <div style="
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+    ">
+
+        <h2 style="
+            margin-top: 0;
+            color: #0c4a6e;
+        ">
+            Citizen Challenge
+        </h2>
+
+        <p>
+            <strong>Problem:</strong>
+            {{ challenge["title"] }}
+        </p>
+
+        <p>
+            <strong>Description:</strong>
+            {{ challenge["description"] }}
+        </p>
+
+        <p>
+            <strong>Category:</strong>
+            {{ challenge["category"] }}
+        </p>
+
+        <p>
+            <strong>District:</strong>
+            {{ challenge["district"] }}
+        </p>
+
+    </div>
+
+
+    <div style="
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+    ">
+
+        <h2 style="
+            margin-top: 0;
+            color: #0c4a6e;
+        ">
+            Project Information
+        </h2>
+
+
+        {% if error %}
+
+        <div style="
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        ">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form method="POST">
+
+
+            <label>
+                <strong>Project Title</strong>
+            </label>
+
+            <input
+                type="text"
+                name="project_title"
+                placeholder="Example: Smart Water Quality Monitoring System"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                "
+            >
+
+
+            <label>
+                <strong>Project Description</strong>
+            </label>
+
+            <textarea
+                name="project_description"
+                placeholder="Describe how your university plans to address this challenge..."
+                rows="6"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                "
+            ></textarea>
+
+
+            <label>
+                <strong>Department</strong>
+            </label>
+
+            <input
+                type="text"
+                name="department"
+                placeholder="Example: Computer Science and Engineering"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                "
+            >
+
+
+            <label>
+                <strong>Faculty Mentor</strong>
+            </label>
+
+            <input
+                type="text"
+                name="faculty_mentor"
+                placeholder="Enter faculty mentor name"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                "
+            >
+
+
+            <label>
+                <strong>Required Skills</strong>
+            </label>
+
+            <textarea
+                name="required_skills"
+                placeholder="Example: Python, IoT, Data Analysis, Embedded Systems"
+                rows="4"
+                required
+                style="
+                    width: 100%;
+                    padding: 12px;
+                    margin-top: 8px;
+                    margin-bottom: 25px;
+                    border: 1px solid #cbd5e1;
+                    border-radius: 8px;
+                "
+            ></textarea>
+
+
+            <button
+                type="submit"
+                style="
+                    background: #0284c7;
+                    color: white;
+                    padding: 14px 28px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                "
+            >
+                Create Project
+            </button>
+
+
+            <a
+                href="/university/dashboard"
+                style="
+                    display: inline-block;
+                    margin-left: 10px;
+                    padding: 14px 24px;
+                    background: #e2e8f0;
+                    color: #334155;
+                    border-radius: 8px;
+                    text-decoration: none;
+                "
+            >
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+
+    {% else %}
+
+    <div style="
+        background: white;
+        padding: 35px;
+        border-radius: 15px;
+        text-align: center;
+    ">
+
+        <h2>
+            Challenge Not Found
+        </h2>
+
+        <p>
+            The selected challenge could not be found.
+        </p>
+
+        <a
+            href="/university/dashboard"
+            style="
+                display: inline-block;
+                margin-top: 15px;
+                background: #0284c7;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                text-decoration: none;
+            "
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+```
+
+</section>
+
+{% endblock %}

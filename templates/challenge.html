@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+
+{% block title %}
+Challenge Details | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 80vh;
+    padding: 50px 20px;
+    background: #eef6ff;
+">
+
+    <div style="
+        max-width: 1000px;
+        margin: auto;
+    ">
+
+
+        <!-- HEADER -->
+
+        <div style="
+            background: linear-gradient(135deg, #173b7a, #2563eb);
+            padding: 35px;
+            border-radius: 18px;
+            color: white;
+            margin-bottom: 25px;
+        ">
+
+            <h1 style="
+                margin-top: 0;
+            ">
+                📋 Challenge Details
+            </h1>
+
+            <p style="
+                color: #eaf3ff;
+                font-size: 17px;
+            ">
+                Review the citizen's challenge and decide
+                whether your university can work on it.
+            </p>
+
+        </div>
+
+
+        <!-- PROBLEM DETAILS -->
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        ">
+
+            <h2 style="
+                color: #173b7a;
+                margin-top: 0;
+            ">
+                🧩 Problem Information
+            </h2>
+
+
+            <h3>
+                {{ submission["title"] }}
+            </h3>
+
+
+            <p style="
+                line-height: 1.7;
+                color: #4b5563;
+            ">
+                {{ submission["description"] }}
+            </p>
+
+
+            <hr style="
+                border: none;
+                border-top: 1px solid #e5e7eb;
+                margin: 25px 0;
+            ">
+
+
+            <p>
+                <strong>Category:</strong>
+                {{ submission["category"] }}
+            </p>
+
+
+            <p>
+                <strong>Priority:</strong>
+                {{ submission["priority"] }}
+            </p>
+
+
+            <p>
+                <strong>District:</strong>
+                {{ submission["district"] }}
+            </p>
+
+
+            <p>
+                <strong>Address / Locality:</strong>
+                {{ submission["address"] }}
+            </p>
+
+
+            <p>
+                <strong>Current Status:</strong>
+
+                {% if submission["status"] == "Accepted" %}
+
+                    <span style="
+                        color: #15803d;
+                        font-weight: bold;
+                    ">
+                        ✅ Accepted
+                    </span>
+
+                {% elif submission["status"] == "Denied" %}
+
+                    <span style="
+                        color: #b91c1c;
+                        font-weight: bold;
+                    ">
+                        ❌ Denied
+                    </span>
+
+                {% else %}
+
+                    <span style="
+                        color: #b45309;
+                        font-weight: bold;
+                    ">
+                        ⏳ Submitted
+                    </span>
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+
+        <!-- CITIZEN DETAILS -->
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        ">
+
+            <h2 style="
+                color: #173b7a;
+                margin-top: 0;
+            ">
+                👤 Citizen Information
+            </h2>
+
+
+            <p>
+                <strong>Name:</strong>
+                {{ submission["name"] }}
+            </p>
+
+
+            <p>
+                <strong>Email:</strong>
+                {{ submission["email"] }}
+            </p>
+
+
+            <p>
+                <strong>Phone:</strong>
+                {{ submission["phone"] or "Not provided" }}
+            </p>
+
+
+            <p>
+                <strong>Address:</strong>
+                {{ submission["address"] }}
+            </p>
+
+
+            <p>
+                <strong>District:</strong>
+                {{ submission["district"] }}
+            </p>
+
+        </div>
+
+
+        <!-- PHOTO -->
+
+        {% if submission["photo"] %}
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        ">
+
+            <h2 style="
+                color: #173b7a;
+                margin-top: 0;
+            ">
+                📷 Uploaded Photo
+            </h2>
+
+            <img
+                src="/uploads/{{ submission['photo'] }}"
+                alt="Citizen uploaded photo"
+                style="
+                    max-width: 100%;
+                    max-height: 500px;
+                    border-radius: 12px;
+                "
+            >
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- VIDEO -->
+
+        {% if submission["video"] %}
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        ">
+
+            <h2 style="
+                color: #173b7a;
+                margin-top: 0;
+            ">
+                🎥 Uploaded Video
+            </h2>
+
+           <video
+    controls
+    preload="metadata"
+    style="
+        width: 100%;
+        max-height: 500px;
+        border-radius: 12px;
+    "
+>
+    <source
+        src="{{ url_for('uploaded_file', filename=submission['video']) }}"
+        type="video/mp4"
+    >
+
+    Your browser does not support video playback.
+</video>
+        </div>
+
+        {% endif %}
+
+
+        <!-- ACTIONS -->
+
+        {% if submission["status"] == "Submitted" %}
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+        ">
+
+            <h2 style="
+                color: #173b7a;
+            ">
+                University Decision
+            </h2>
+
+            <p style="
+                color: #666;
+                margin-bottom: 25px;
+            ">
+                Can your university take responsibility for this challenge?
+            </p>
+
+
+            <div style="
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                flex-wrap: wrap;
+            ">
+
+
+                <!-- ACCEPT -->
+
+                <form
+                    method="POST"
+                    action="/university/challenge/{{ submission['id'] }}/accept"
+                >
+
+                    <button
+                        type="submit"
+                        style="
+                            background: #16a34a;
+                            color: white;
+                            border: none;
+                            padding: 14px 28px;
+                            border-radius: 9px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        "
+                    >
+                        ✅ Accept Challenge
+                    </button>
+
+                </form>
+
+
+                <!-- DENY -->
+
+                <form
+                    method="POST"
+                    action="/university/challenge/{{ submission['id'] }}/deny"
+                >
+
+                    <button
+                        type="submit"
+                        style="
+                            background: #dc2626;
+                            color: white;
+                            border: none;
+                            padding: 14px 28px;
+                            border-radius: 9px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            cursor: pointer;
+                        "
+                    >
+                        ❌ Deny Challenge
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div style="
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+        ">
+
+            <h3>
+                Challenge already reviewed
+            </h3>
+
+            <p>
+                Current status:
+                <strong>{{ submission["status"] }}</strong>
+            </p>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- BACK -->
+
+        <div style="
+            text-align: center;
+            margin-bottom: 40px;
+        ">
+
+            <a
+                href="/university/dashboard"
+                style="
+                    color: #2563eb;
+                    text-decoration: none;
+                    font-weight: bold;
+                "
+            >
+                ← Back to University Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

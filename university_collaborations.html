@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}
+Industry Collaborations | Societal Innovation Portal
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 85vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+    <div style="
+        max-width: 1100px;
+        margin: auto;
+    ">
+
+        <!-- HEADER -->
+
+        <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        ">
+
+            <h1 style="
+                margin-top: 0;
+                color: #172554;
+            ">
+                🤝 Industry Collaborations
+            </h1>
+
+            <p style="
+                color: #64748b;
+                font-size: 16px;
+                margin-bottom: 0;
+            ">
+                Review collaboration offers from industry partners
+                and decide whether to accept or reject them.
+            </p>
+
+        </div>
+
+
+        <!-- COLLABORATIONS -->
+
+        {% if collaborations %}
+
+            {% for collaboration in collaborations %}
+
+            <div style="
+                background: white;
+                padding: 30px;
+                border-radius: 16px;
+                margin-bottom: 25px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            ">
+
+                <!-- PROJECT -->
+
+                <h2 style="
+                    margin-top: 0;
+                    color: #172554;
+                ">
+                    {{ collaboration["project_title"] }}
+                </h2>
+
+
+                <!-- INDUSTRY -->
+
+                <div style="
+                    background: #eff6ff;
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin-bottom: 20px;
+                ">
+
+                    <h3 style="
+                        margin-top: 0;
+                        color: #1e3a8a;
+                    ">
+                        Industry Partner
+                    </h3>
+
+                    <p>
+                        <strong>Name:</strong>
+                        {{ collaboration["industry_name"] }}
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        {{ collaboration["industry_email"] }}
+                    </p>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <h3 style="
+                    color: #172554;
+                ">
+                    Collaboration Proposal
+                </h3>
+
+                <div style="
+                    background: #f8fafc;
+                    padding: 20px;
+                    border-radius: 10px;
+                    line-height: 1.7;
+                    color: #475569;
+                    margin-bottom: 20px;
+                ">
+                    {{ collaboration["message"] }}
+                </div>
+
+
+                <!-- STATUS -->
+
+                <p>
+                    <strong>Status:</strong>
+
+                    {% if collaboration["status"] == "Pending" %}
+
+                        <span style="
+                            display: inline-block;
+                            background: #fef3c7;
+                            color: #92400e;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            margin-left: 5px;
+                        ">
+                            Pending
+                        </span>
+
+                    {% elif collaboration["status"] == "Accepted" %}
+
+                        <span style="
+                            display: inline-block;
+                            background: #dcfce7;
+                            color: #166534;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            margin-left: 5px;
+                        ">
+                            Accepted
+                        </span>
+
+                    {% elif collaboration["status"] == "Rejected" %}
+
+                        <span style="
+                            display: inline-block;
+                            background: #fee2e2;
+                            color: #991b1b;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            margin-left: 5px;
+                        ">
+                            Rejected
+                        </span>
+
+                    {% else %}
+
+                        <span style="
+                            display: inline-block;
+                            background: #e2e8f0;
+                            color: #334155;
+                            padding: 6px 12px;
+                            border-radius: 20px;
+                            margin-left: 5px;
+                        ">
+                            {{ collaboration["status"] }}
+                        </span>
+
+                    {% endif %}
+
+                </p>
+
+
+                <!-- DATE -->
+
+                <p style="
+                    color: #64748b;
+                    font-size: 14px;
+                ">
+                    <strong>Received:</strong>
+                    {{ collaboration["created_at"] }}
+                </p>
+
+
+                <!-- ACTION BUTTONS -->
+
+                {% if collaboration["status"] == "Pending" %}
+
+                <div style="
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    margin-top: 25px;
+                ">
+
+                    <!-- ACCEPT -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'accept_collaboration',
+                            collaboration_id=collaboration['id']
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            style="
+                                background: #16a34a;
+                                color: white;
+                                padding: 13px 25px;
+                                border: none;
+                                border-radius: 8px;
+                                font-size: 16px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            "
+                        >
+                            ✅ Accept Collaboration
+                        </button>
+
+                    </form>
+
+
+                    <!-- REJECT -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'reject_collaboration',
+                            collaboration_id=collaboration['id']
+                        ) }}"
+                    >
+
+                        <button
+                            type="submit"
+                            style="
+                                background: #dc2626;
+                                color: white;
+                                padding: 13px 25px;
+                                border: none;
+                                border-radius: 8px;
+                                font-size: 16px;
+                                cursor: pointer;
+                                font-weight: 600;
+                            "
+                        >
+                            ❌ Reject Collaboration
+                        </button>
+
+                    </form>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <!-- NO COLLABORATIONS -->
+
+            <div style="
+                background: white;
+                padding: 50px 30px;
+                border-radius: 16px;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            ">
+
+                <div style="
+                    font-size: 50px;
+                    margin-bottom: 15px;
+                ">
+                    🤝
+                </div>
+
+                <h2 style="
+                    color: #172554;
+                ">
+                    No Industry Collaborations Yet
+                </h2>
+
+                <p style="
+                    color: #64748b;
+                    line-height: 1.6;
+                ">
+                    When an industry partner sends a collaboration
+                    offer for one of your projects, it will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- NAVIGATION -->
+
+        <div style="
+            margin-top: 25px;
+            text-align: center;
+        ">
+
+            <a
+                href="{{ url_for('university_dashboard') }}"
+                style="
+                    display: inline-block;
+                    background: #2563eb;
+                    color: white;
+                    padding: 13px 24px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    margin-right: 10px;
+                "
+            >
+                ← University Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('university_projects') }}"
+                style="
+                    display: inline-block;
+                    background: #e2e8f0;
+                    color: #334155;
+                    padding: 13px 24px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 600;
+                "
+            >
+                📁 My Projects
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

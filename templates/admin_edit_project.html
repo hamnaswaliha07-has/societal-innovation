@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit University Project
+{% endblock %}
+
+{% block content %}
+
+<section style="
+    min-height: 90vh;
+    padding: 50px 20px;
+    background: #f5f7fb;
+">
+
+```
+<div style="
+    max-width: 900px;
+    margin: auto;
+">
+
+    <div style="
+        background: linear-gradient(135deg, #172554, #2563eb);
+        padding: 30px;
+        border-radius: 18px;
+        color: white;
+        margin-bottom: 25px;
+    ">
+
+        <h1 style="color:white;">
+            ✏️ Edit University Project
+        </h1>
+
+        <p>
+            Update the project information and status.
+        </p>
+
+    </div>
+
+
+    <div style="
+        background:white;
+        padding:30px;
+        border-radius:16px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.06);
+    ">
+
+        <form method="POST">
+
+            <!-- PROJECT TITLE -->
+
+            <label>
+                <strong>Project Title</strong>
+            </label>
+
+            <input
+                type="text"
+                name="project_title"
+                value="{{ project['project_title'] or '' }}"
+                required
+                style="margin-top:8px; margin-bottom:20px;"
+            >
+
+
+            <!-- PROJECT DESCRIPTION -->
+
+            <label>
+                <strong>Project Description</strong>
+            </label>
+
+            <textarea
+                name="project_description"
+                rows="6"
+                style="margin-top:8px; margin-bottom:20px;"
+            >{{ project['project_description'] or '' }}</textarea>
+
+
+            <!-- FACULTY -->
+
+            <label>
+                <strong>Faculty Name</strong>
+            </label>
+
+            <input
+                type="text"
+                name="faculty_name"
+                value="{{ project['faculty_name'] or '' }}"
+                style="margin-top:8px; margin-bottom:20px;"
+            >
+
+
+            <!-- STUDENT TEAM -->
+
+            <label>
+                <strong>Student Team</strong>
+            </label>
+
+            <input
+                type="text"
+                name="student_team"
+                value="{{ project['student_team'] or '' }}"
+                style="margin-top:8px; margin-bottom:20px;"
+            >
+
+
+            <!-- INDUSTRY PARTNER -->
+
+            <label>
+                <strong>Industry Partner</strong>
+            </label>
+
+            <input
+                type="text"
+                name="industry_partner"
+                value="{{ project['industry_partner'] or '' }}"
+                style="margin-top:8px; margin-bottom:20px;"
+            >
+
+
+            <!-- STATUS -->
+
+            <label>
+                <strong>Project Status</strong>
+            </label>
+
+            <select
+                name="status"
+                style="margin-top:8px; margin-bottom:25px;"
+            >
+
+                {% set current_status = project['status'] or 'Planning' %}
+
+                <option value="Planning"
+                    {% if current_status == "Planning" %}selected{% endif %}>
+                    Planning
+                </option>
+
+                <option value="Team Formed"
+                    {% if current_status == "Team Formed" %}selected{% endif %}>
+                    Team Formed
+                </option>
+
+                <option value="Prototype"
+                    {% if current_status == "Prototype" %}selected{% endif %}>
+                    Prototype
+                </option>
+
+                <option value="Testing"
+                    {% if current_status == "Testing" %}selected{% endif %}>
+                    Testing
+                </option>
+
+                <option value="Implementation"
+                    {% if current_status == "Implementation" %}selected{% endif %}>
+                    Implementation
+                </option>
+
+                <option value="Completed"
+                    {% if current_status == "Completed" %}selected{% endif %}>
+                    Completed
+                </option>
+
+            </select>
+
+
+            <!-- BUTTONS -->
+
+            <div style="
+                display:flex;
+                gap:12px;
+                flex-wrap:wrap;
+            ">
+
+                <button
+                    type="submit"
+                    style="
+                        background:#2563eb;
+                        color:white;
+                        padding:12px 20px;
+                        border-radius:8px;
+                        font-weight:600;
+                    "
+                >
+                    💾 Save Changes
+                </button>
+
+
+                <a
+                    href="{{ url_for('admin_view_project', project_id=project['id']) }}"
+                    style="
+                        background:#64748b;
+                        color:white;
+                        padding:12px 20px;
+                        border-radius:8px;
+                        text-decoration:none;
+                        font-weight:600;
+                    "
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+{% endblock %}
