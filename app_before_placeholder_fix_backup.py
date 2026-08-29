@@ -146,6 +146,29 @@ def create_database():
         )
     """)
 
+    # -----------------------------------------------------
+    # ADMIN MESSAGES TO UNIVERSITIES
+    # -----------------------------------------------------
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS admin_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            admin_id INTEGER NOT NULL,
+            university_id INTEGER NOT NULL,
+            project_id INTEGER,
+            subject TEXT NOT NULL,
+            message TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (admin_id)
+                REFERENCES users(id),
+            FOREIGN KEY (university_id)
+                REFERENCES users(id),
+            FOREIGN KEY (project_id)
+                REFERENCES university_projects(id)
+        )
+    """)
+
     connection.commit()
     connection.close()
 
@@ -153,9 +176,6 @@ def create_database():
 create_database()
 
 
-# =========================================================
-# HOME
-# =========================================================
 
 @app.route("/")
 def home():
@@ -343,56 +363,6 @@ def login():
 # =========================================================
 # SEPARATE ADMIN LOGIN
 # =========================================================
-
-@app.route("/admin-login", methods=["GET", "POST"])
-def admin_login():
-
-    if request.method == "POST":
-
-        email = request.form.get(
-            "email",
-            ""
-        ).strip().lower()
-
-        password = request.form.get(
-            "password",
-            ""
-        )
-
-        connection = get_database()
-
-        admin = connection.execute("""
-            SELECT *
-            FROM users
-            WHERE email = ?
-            AND role = 'admin'
-        """, (email,)).fetchone()
-
-        connection.close()
-
-        if not admin:
-            return render_template(
-                "admin_login.html",
-                error="Admin account not found."
-            )
-
-        if not check_password_hash(
-            admin["password"],
-            password
-        ):
-            return render_template(
-                "admin_login.html",
-                error="Incorrect admin password."
-            )
-
-        session["user_id"] = admin["id"]
-        session["user_name"] = admin["name"]
-        session["user_email"] = admin["email"]
-        session["user_role"] = "admin"
-
-        return redirect(url_for("admin_dashboard"))
-
-    return render_template("admin_login.html")
 
 
 # =========================================================
@@ -712,7 +682,8 @@ def problem():
             photo,
             video
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
     """, (
         name,
         email,
@@ -727,7 +698,7 @@ def problem():
         video_filename
     ))
 
-    submission_id = cursor.lastrowid
+    submission_id = cursor.fetchone()["id"]
 
     connection.commit()
     connection.close()
@@ -796,7 +767,84 @@ def university_dashboard():
         projects=projects
     )
 
+# =========================================================
+# UNIVERSITY - VIEW ADMIN MESSAGES
+# =========================================================
 
+@app.route("/university/messages")
+def university_messages():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("user_role") != "university":
+        return "Access denied. University account required.", 403
+
+    connection = get_database()
+
+    messages = connection.execute("""
+        SELECT
+            admin_messages.*,
+            users.name AS admin_name,
+            university_projects.project_title
+                AS project_title
+        FROM admin_messages
+
+        LEFT JOIN users
+            ON admin_messages.admin_id = users.id
+
+        LEFT JOIN university_projects
+            ON admin_messages.project_id =
+               university_projects.id
+
+        WHERE admin_messages.university_id = ?
+
+        ORDER BY admin_messages.id DESC
+    """, (
+        session.get("user_id"),
+    )).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "university_messages.html",
+        messages=messages
+    )
+
+
+# =========================================================
+# UNIVERSITY - MARK MESSAGE AS READ
+# =========================================================
+
+@app.route(
+    "/university/messages/<int:message_id>/read",
+    methods=["POST"]
+)
+def university_mark_message_read(message_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("user_role") != "university":
+        return "Access denied. University account required.", 403
+
+    connection = get_database()
+
+    connection.execute("""
+        UPDATE admin_messages
+        SET is_read = 1
+        WHERE id = ?
+        AND university_id = ?
+    """, (
+        message_id,
+        session.get("user_id")
+    ))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("university_messages"))
+ 
 # =========================================================
 # VIEW UNIVERSITY CHALLENGE
 # =========================================================
@@ -1676,6 +1724,52 @@ def admin_required():
 
     return None
 
+# =========================================================
+# SEPARATE ADMIN LOGIN
+# =========================================================
+
+@app.route("/admin-login", methods=["GET", "POST"])
+def admin_login():
+
+    if request.method == "POST":
+
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
+        connection = get_database()
+
+        admin = connection.execute("""
+            SELECT *
+            FROM users
+            WHERE email = ?
+            AND role = 'admin'
+        """, (email,)).fetchone()
+
+        connection.close()
+
+        if not admin:
+            return render_template(
+                "admin_login.html",
+                error="Admin account not found."
+            )
+
+        if not check_password_hash(
+            admin["password"],
+            password
+        ):
+            return render_template(
+                "admin_login.html",
+                error="Incorrect admin password."
+            )
+
+        session["user_id"] = admin["id"]
+        session["user_name"] = admin["name"]
+        session["user_email"] = admin["email"]
+        session["user_role"] = "admin"
+
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin_login.html")
 
 # =========================================================
 # ADMIN DASHBOARD
@@ -1740,6 +1834,21 @@ def admin_dashboard():
         WHERE status = 'Accepted'
     """).fetchone()[0]
 
+    # Admin messages
+    admin_messages = connection.execute("""
+        SELECT
+            admin_messages.*,
+            universities.name AS university_name,
+            universities.email AS university_email,
+            university_projects.project_title AS project_title
+        FROM admin_messages
+        LEFT JOIN users AS universities
+            ON admin_messages.university_id = universities.id
+        LEFT JOIN university_projects
+            ON admin_messages.project_id = university_projects.id
+        ORDER BY admin_messages.id DESC
+    """).fetchall()
+
     connection.close()
 
     return render_template(
@@ -1752,9 +1861,44 @@ def admin_dashboard():
         accepted_challenges=accepted_challenges,
         denied_challenges=denied_challenges,
         pending_collaborations=pending_collaborations,
-        accepted_collaborations=accepted_collaborations
+        accepted_collaborations=accepted_collaborations,
+        admin_messages=admin_messages
     )
 
+# =========================================================
+# ADMIN - VIEW SENT MESSAGES
+# =========================================================
+
+@app.route("/admin/messages")
+def admin_messages():
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    messages = connection.execute("""
+        SELECT
+            admin_messages.*,
+            universities.name AS university_name,
+            universities.email AS university_email,
+            university_projects.project_title AS project_title
+        FROM admin_messages
+        LEFT JOIN users AS universities
+            ON admin_messages.university_id = universities.id
+        LEFT JOIN university_projects
+            ON admin_messages.project_id = university_projects.id
+        ORDER BY admin_messages.id DESC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin_messages.html",
+        messages=messages
+    )
 
 # =========================================================
 # ADMIN - VIEW ALL CHALLENGES
@@ -1782,6 +1926,197 @@ def admin_challenges():
         "admin_challenges.html",
         challenges=challenges
     )
+
+
+# =========================================================
+# ADMIN - VIEW SINGLE CHALLENGE
+# =========================================================
+
+@app.route("/admin/challenge/<int:submission_id>")
+def admin_view_challenge(submission_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    challenge = connection.execute("""
+        SELECT *
+        FROM submissions
+        WHERE id = ?
+    """, (submission_id,)).fetchone()
+
+    if not challenge:
+        connection.close()
+        return "Challenge not found.", 404
+
+    connection.close()
+
+    return render_template(
+        "admin_challenge_details.html",
+        challenge=challenge
+    )
+
+# =========================================================
+# ADMIN - EDIT CHALLENGE
+# =========================================================
+
+@app.route("/admin/challenge/<int:submission_id>/edit", methods=["GET", "POST"])
+def admin_edit_challenge(submission_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    challenge = connection.execute("""
+        SELECT *
+        FROM submissions
+        WHERE id = ?
+    """, (submission_id,)).fetchone()
+
+    if not challenge:
+        connection.close()
+        return "Challenge not found.", 404
+
+    if request.method == "POST":
+
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        category = request.form.get("category", "").strip()
+        priority = request.form.get("priority", "").strip()
+        district = request.form.get("district", "").strip()
+        address = request.form.get("address", "").strip()
+
+        if not title or not description or not category or not priority or not district or not address:
+            connection.close()
+
+            return render_template(
+                "admin_edit_challenge.html",
+                challenge=challenge,
+                error="Please fill in all required fields."
+            )
+
+        connection.execute("""
+            UPDATE submissions
+            SET
+                title = ?,
+                description = ?,
+                category = ?,
+                priority = ?,
+                district = ?,
+                address = ?
+            WHERE id = ?
+        """, (
+            title,
+            description,
+            category,
+            priority,
+            district,
+            address,
+            submission_id
+        ))
+
+        connection.commit()
+
+        updated_challenge = connection.execute("""
+            SELECT *
+            FROM submissions
+            WHERE id = ?
+        """, (submission_id,)).fetchone()
+
+        connection.close()
+
+        return render_template(
+            "admin_challenge_details.html",
+            challenge=updated_challenge,
+            success="Challenge updated successfully."
+        )
+
+    connection.close()
+
+    return render_template(
+        "admin_edit_challenge.html",
+        challenge=challenge
+    )
+
+
+# =========================================================
+# ADMIN - DELETE CHALLENGE
+# =========================================================
+
+@app.route("/admin/challenge/<int:submission_id>/delete", methods=["POST"])
+def admin_delete_challenge(submission_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    challenge = connection.execute("""
+        SELECT *
+        FROM submissions
+        WHERE id = ?
+    """, (submission_id,)).fetchone()
+
+    if not challenge:
+        connection.close()
+        return "Challenge not found.", 404
+
+    # Delete related projects and collaborations
+    projects = connection.execute("""
+        SELECT id
+        FROM university_projects
+        WHERE submission_id = ?
+    """, (submission_id,)).fetchall()
+
+    for project in projects:
+        connection.execute("""
+            DELETE FROM collaborations
+            WHERE project_id = ?
+        """, (project["id"],))
+
+    connection.execute("""
+        DELETE FROM university_projects
+        WHERE submission_id = ?
+    """, (submission_id,))
+
+    # Delete uploaded photo
+    if challenge["photo"]:
+        photo_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            challenge["photo"]
+        )
+
+        if os.path.exists(photo_path):
+            os.remove(photo_path)
+
+    # Delete uploaded video
+    if challenge["video"]:
+        video_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            challenge["video"]
+        )
+
+        if os.path.exists(video_path):
+            os.remove(video_path)
+
+    # Delete challenge
+    connection.execute("""
+        DELETE FROM submissions
+        WHERE id = ?
+    """, (submission_id,))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_challenges"))
 
 
 # =========================================================
@@ -1820,6 +2155,229 @@ def admin_users():
 
 
 # =========================================================
+# ADMIN - VIEW SINGLE USER
+# =========================================================
+
+@app.route("/admin/user/<int:user_id>")
+def admin_view_user(user_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    user = connection.execute("""
+        SELECT
+            id,
+            name,
+            email,
+            phone,
+            address,
+            district,
+            role
+        FROM users
+        WHERE id = ?
+    """, (user_id,)).fetchone()
+
+    if not user:
+        connection.close()
+        return "User not found.", 404
+
+    connection.close()
+
+    return render_template(
+        "admin_user_details.html",
+        user=user
+    )
+
+
+# =========================================================
+# ADMIN - EDIT USER
+# =========================================================
+
+@app.route("/admin/user/<int:user_id>/edit", methods=["GET", "POST"])
+def admin_edit_user(user_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    user = connection.execute("""
+        SELECT *
+        FROM users
+        WHERE id = ?
+    """, (user_id,)).fetchone()
+
+    if not user:
+        connection.close()
+        return "User not found.", 404
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+        address = request.form.get("address", "").strip()
+        district = request.form.get("district", "").strip()
+        role = request.form.get("role", "").strip()
+
+        allowed_roles = [
+            "citizen",
+            "university",
+            "industry",
+            "admin"
+        ]
+
+        if not name or not email:
+            connection.close()
+
+            return render_template(
+                "admin_edit_user.html",
+                user=user,
+                error="Name and email are required."
+            )
+
+        if role not in allowed_roles:
+            connection.close()
+
+            return render_template(
+                "admin_edit_user.html",
+                user=user,
+                error="Invalid account type."
+            )
+
+        existing_email = connection.execute("""
+            SELECT id
+            FROM users
+            WHERE email = ?
+            AND id != ?
+        """, (email, user_id)).fetchone()
+
+        if existing_email:
+            connection.close()
+
+            return render_template(
+                "admin_edit_user.html",
+                user=user,
+                error="Another account already uses this email."
+            )
+
+        connection.execute("""
+            UPDATE users
+            SET
+                name = ?,
+                email = ?,
+                phone = ?,
+                address = ?,
+                district = ?,
+                role = ?
+            WHERE id = ?
+        """, (
+            name,
+            email,
+            phone,
+            address,
+            district,
+            role,
+            user_id
+        ))
+
+        connection.commit()
+
+        updated_user = connection.execute("""
+            SELECT *
+            FROM users
+            WHERE id = ?
+        """, (user_id,)).fetchone()
+
+        connection.close()
+
+        return render_template(
+            "admin_user_details.html",
+            user=updated_user,
+            success="User updated successfully."
+        )
+
+    connection.close()
+
+    return render_template(
+        "admin_edit_user.html",
+        user=user
+    )
+
+
+# =========================================================
+# ADMIN - DELETE USER
+# =========================================================
+
+@app.route("/admin/user/<int:user_id>/delete", methods=["POST"])
+def admin_delete_user(user_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    # Prevent admin from deleting their own account
+    if user_id == session.get("user_id"):
+        return "You cannot delete the currently logged-in admin account.", 400
+
+    connection = get_database()
+
+    user = connection.execute("""
+        SELECT *
+        FROM users
+        WHERE id = ?
+    """, (user_id,)).fetchone()
+
+    if not user:
+        connection.close()
+        return "User not found.", 404
+
+    # Delete collaborations involving this user
+    connection.execute("""
+        DELETE FROM collaborations
+        WHERE industry_id = ?
+        OR university_id = ?
+    """, (user_id, user_id))
+
+    # Delete projects created by this university
+    projects = connection.execute("""
+        SELECT id
+        FROM university_projects
+        WHERE university_id = ?
+    """, (user_id,)).fetchall()
+
+    for project in projects:
+
+        connection.execute("""
+            DELETE FROM collaborations
+            WHERE project_id = ?
+        """, (project["id"],))
+
+    connection.execute("""
+        DELETE FROM university_projects
+        WHERE university_id = ?
+    """, (user_id,))
+
+    # Delete user
+    connection.execute("""
+        DELETE FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_users"))
+
+
+# =========================================================
 # ADMIN - VIEW UNIVERSITY PROJECTS
 # =========================================================
 
@@ -1845,6 +2403,7 @@ def admin_projects():
             submissions.address AS challenge_address,
             submissions.photo AS challenge_photo,
             submissions.video AS challenge_video,
+            submissions.status AS challenge_status,
 
             users.name AS university_name,
             users.email AS university_email
@@ -1852,12 +2411,10 @@ def admin_projects():
         FROM university_projects
 
         LEFT JOIN submissions
-            ON university_projects.submission_id =
-               submissions.id
+            ON university_projects.submission_id = submissions.id
 
         LEFT JOIN users
-            ON university_projects.university_id =
-               users.id
+            ON university_projects.university_id = users.id
 
         ORDER BY university_projects.id DESC
     """).fetchall()
@@ -1867,64 +2424,6 @@ def admin_projects():
     return render_template(
         "admin_projects.html",
         projects=projects
-    )
-
-
-# =========================================================
-# ADMIN - VIEW COLLABORATIONS
-# =========================================================
-
-@app.route("/admin/collaborations")
-def admin_collaborations():
-
-    access = admin_required()
-
-    if access:
-        return access
-
-    connection = get_database()
-
-    collaborations = connection.execute("""
-        SELECT
-            collaborations.*,
-
-            university_projects.project_title
-                AS project_title,
-
-            university.name
-                AS university_name,
-
-            university.email
-                AS university_email,
-
-            industry.name
-                AS industry_name,
-
-            industry.email
-                AS industry_email
-
-        FROM collaborations
-
-        LEFT JOIN university_projects
-            ON collaborations.project_id =
-               university_projects.id
-
-        LEFT JOIN users AS university
-            ON collaborations.university_id =
-               university.id
-
-        LEFT JOIN users AS industry
-            ON collaborations.industry_id =
-               industry.id
-
-        ORDER BY collaborations.id DESC
-    """).fetchall()
-
-    connection.close()
-
-    return render_template(
-        "admin_collaborations.html",
-        collaborations=collaborations
     )
 
 
@@ -1965,17 +2464,13 @@ def admin_view_project(project_id):
         FROM university_projects
 
         LEFT JOIN submissions
-            ON university_projects.submission_id =
-               submissions.id
+            ON university_projects.submission_id = submissions.id
 
         LEFT JOIN users AS university
-            ON university_projects.university_id =
-               university.id
+            ON university_projects.university_id = university.id
 
         WHERE university_projects.id = ?
-    """, (
-        project_id,
-    )).fetchone()
+    """, (project_id,)).fetchone()
 
     if not project:
         connection.close()
@@ -1988,13 +2483,12 @@ def admin_view_project(project_id):
         project=project
     )
 
-
 # =========================================================
-# ADMIN - VIEW SINGLE CHALLENGE
+# ADMIN - EDIT UNIVERSITY PROJECT
 # =========================================================
 
-@app.route("/admin/challenge/<int:submission_id>")
-def admin_view_challenge(submission_id):
+@app.route("/admin/project/<int:project_id>/edit", methods=["GET", "POST"])
+def admin_edit_project(project_id):
 
     access = admin_required()
 
@@ -2003,65 +2497,476 @@ def admin_view_challenge(submission_id):
 
     connection = get_database()
 
-    challenge = connection.execute("""
-        SELECT *
-        FROM submissions
-        WHERE id = ?
-    """, (
-        submission_id,
-    )).fetchone()
-
-    if not challenge:
-        connection.close()
-        return "Challenge not found.", 404
-
-    connection.close()
-
-    return render_template(
-        "admin_challenge_details.html",
-        challenge=challenge
-    )
-
-
-# =========================================================
-# ADMIN - VIEW SINGLE USER
-# =========================================================
-
-@app.route("/admin/user/<int:user_id>")
-def admin_view_user(user_id):
-
-    access = admin_required()
-
-    if access:
-        return access
-
-    connection = get_database()
-
-    user = connection.execute("""
+    project = connection.execute("""
         SELECT
-            id,
-            name,
-            email,
-            phone,
-            address,
-            district,
-            role
-        FROM users
-        WHERE id = ?
-    """, (
-        user_id,
-    )).fetchone()
+            university_projects.*,
+            submissions.title AS challenge_title,
+            submissions.description AS challenge_description,
+            users.name AS university_name
+        FROM university_projects
 
-    if not user:
+        LEFT JOIN submissions
+            ON university_projects.submission_id = submissions.id
+
+        LEFT JOIN users
+            ON university_projects.university_id = users.id
+
+        WHERE university_projects.id = ?
+    """, (project_id,)).fetchone()
+
+    if not project:
         connection.close()
-        return "User not found.", 404
+        return "Project not found.", 404
+
+    if request.method == "POST":
+
+        project_title = request.form.get(
+            "project_title", ""
+        ).strip()
+
+        project_description = request.form.get(
+            "project_description", ""
+        ).strip()
+
+        faculty_name = request.form.get(
+            "faculty_name", ""
+        ).strip()
+
+        student_team = request.form.get(
+            "student_team", ""
+        ).strip()
+
+        industry_partner = request.form.get(
+            "industry_partner", ""
+        ).strip()
+
+        status = request.form.get(
+            "status", ""
+        ).strip()
+
+        allowed_statuses = [
+            "Planning",
+            "Team Formed",
+            "Prototype",
+            "Testing",
+            "Implementation",
+            "Completed"
+        ]
+
+        if status not in allowed_statuses:
+            status = "Planning"
+
+        if not project_title:
+            connection.close()
+
+            return render_template(
+                "admin_edit_project.html",
+                project=project,
+                error="Project title is required."
+            )
+
+        connection.execute("""
+            UPDATE university_projects
+            SET
+                project_title = ?,
+                project_description = ?,
+                faculty_name = ?,
+                student_team = ?,
+                industry_partner = ?,
+                status = ?
+            WHERE id = ?
+        """, (
+            project_title,
+            project_description,
+            faculty_name,
+            student_team,
+            industry_partner,
+            status,
+            project_id
+        ))
+
+        connection.commit()
+
+        updated_project = connection.execute("""
+            SELECT
+                university_projects.*,
+                submissions.title AS challenge_title,
+                submissions.description AS challenge_description,
+                users.name AS university_name
+            FROM university_projects
+
+            LEFT JOIN submissions
+                ON university_projects.submission_id = submissions.id
+
+            LEFT JOIN users
+                ON university_projects.university_id = users.id
+
+            WHERE university_projects.id = ?
+        """, (project_id,)).fetchone()
+
+        connection.close()
+
+        return render_template(
+            "admin_project_details.html",
+            project=updated_project,
+            success="University project updated successfully."
+        )
 
     connection.close()
 
     return render_template(
-        "admin_user.html",
-        user=user
+        "admin_edit_project.html",
+        project=project
     )
+
+# =========================================================
+# ADMIN - SEND MESSAGE TO UNIVERSITY
+# =========================================================
+
+@app.route("/admin/message/university/<int:university_id>/<int:project_id>", methods=["GET", "POST"])
+def admin_message_university(university_id, project_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    university = connection.execute("""
+        SELECT id, name, email
+        FROM users
+        WHERE id = ? AND role = 'university'
+    """, (university_id,)).fetchone()
+
+    if not university:
+        connection.close()
+        return "University not found.", 404
+
+    if request.method == "POST":
+
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+
+        if not subject or not message:
+            connection.close()
+            return "Subject and message are required.", 400
+
+        connection.execute("""
+            INSERT INTO admin_messages
+            (
+                admin_id,
+                university_id,
+                project_id,
+                subject,
+                message
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            session.get("user_id"),
+            university_id,
+            project_id,
+            subject,
+            message
+        ))
+
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("admin_dashboard"))
+
+    connection.close()
+
+    return render_template(
+    "admin_message_university.html",
+    university=university,
+    project_id=project_id
+)
+
+# =========================================================
+# ADMIN - DELETE UNIVERSITY PROJECT
+# =========================================================
+
+@app.route("/admin/project/<int:project_id>/delete", methods=["POST"])
+def admin_delete_project(project_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    project = connection.execute("""
+        SELECT id
+        FROM university_projects
+        WHERE id = ?
+    """, (project_id,)).fetchone()
+
+    if not project:
+        connection.close()
+        return "Project not found.", 404
+
+    connection.execute("""
+        DELETE FROM collaborations
+        WHERE project_id = ?
+    """, (project_id,))
+
+    connection.execute("""
+        DELETE FROM university_projects
+        WHERE id = ?
+    """, (project_id,))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_projects"))
+
+
+# =========================================================
+# ADMIN - VIEW COLLABORATIONS
+# =========================================================
+
+@app.route("/admin/collaborations")
+def admin_collaborations():
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    collaborations = connection.execute("""
+        SELECT
+            collaborations.*,
+
+            university_projects.project_title AS project_title,
+
+            university.name AS university_name,
+            university.email AS university_email,
+
+            industry.name AS industry_name,
+            industry.email AS industry_email
+
+        FROM collaborations
+
+        LEFT JOIN university_projects
+            ON collaborations.project_id = university_projects.id
+
+        LEFT JOIN users AS university
+            ON collaborations.university_id = university.id
+
+        LEFT JOIN users AS industry
+            ON collaborations.industry_id = industry.id
+
+        ORDER BY collaborations.id DESC
+    """).fetchall()
+
+    connection.close()
+
+    return render_template(
+        "admin_collaborations.html",
+        collaborations=collaborations
+    )
+
+
+# =========================================================
+# ADMIN - VIEW SINGLE COLLABORATION
+# =========================================================
+
+@app.route("/admin/collaboration/<int:collaboration_id>")
+def admin_view_collaboration(collaboration_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    collaboration = connection.execute("""
+        SELECT
+            collaborations.*,
+
+            university_projects.project_title AS project_title,
+
+            university.name AS university_name,
+            university.email AS university_email,
+
+            industry.name AS industry_name,
+            industry.email AS industry_email
+
+        FROM collaborations
+
+        LEFT JOIN university_projects
+            ON collaborations.project_id = university_projects.id
+
+        LEFT JOIN users AS university
+            ON collaborations.university_id = university.id
+
+        LEFT JOIN users AS industry
+            ON collaborations.industry_id = industry.id
+
+        WHERE collaborations.id = ?
+    """, (collaboration_id,)).fetchone()
+
+    if not collaboration:
+        connection.close()
+        return "Collaboration not found.", 404
+
+    connection.close()
+
+    return render_template(
+        "admin_collaboration_details.html",
+        collaboration=collaboration
+    )
+
+
+# =========================================================
+# ADMIN - EDIT COLLABORATION
+# =========================================================
+
+@app.route(
+    "/admin/collaboration/<int:collaboration_id>/edit",
+    methods=["GET", "POST"]
+)
+def admin_edit_collaboration(collaboration_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    collaboration = connection.execute("""
+        SELECT *
+        FROM collaborations
+        WHERE id = ?
+    """, (collaboration_id,)).fetchone()
+
+    if not collaboration:
+        connection.close()
+        return "Collaboration not found.", 404
+
+    if request.method == "POST":
+
+        message = request.form.get(
+            "message", ""
+        ).strip()
+
+        status = request.form.get(
+            "status", ""
+        ).strip()
+
+        allowed_statuses = [
+            "Pending",
+            "Accepted",
+            "Rejected"
+        ]
+
+        if status not in allowed_statuses:
+            connection.close()
+
+            return render_template(
+                "admin_edit_collaboration.html",
+                collaboration=collaboration,
+                error="Invalid collaboration status."
+            )
+
+        connection.execute("""
+            UPDATE collaborations
+            SET
+                message = ?,
+                status = ?
+            WHERE id = ?
+        """, (
+            message,
+            status,
+            collaboration_id
+        ))
+
+        connection.commit()
+
+        updated_collaboration = connection.execute("""
+            SELECT
+                collaborations.*,
+
+                university_projects.project_title AS project_title,
+
+                university.name AS university_name,
+                university.email AS university_email,
+
+                industry.name AS industry_name,
+                industry.email AS industry_email
+
+            FROM collaborations
+
+            LEFT JOIN university_projects
+                ON collaborations.project_id = university_projects.id
+
+            LEFT JOIN users AS university
+                ON collaborations.university_id = university.id
+
+            LEFT JOIN users AS industry
+                ON collaborations.industry_id = industry.id
+
+            WHERE collaborations.id = ?
+        """, (collaboration_id,)).fetchone()
+
+        connection.close()
+
+        return render_template(
+            "admin_collaboration_details.html",
+            collaboration=updated_collaboration,
+            success="Collaboration updated successfully."
+        )
+
+    connection.close()
+
+    return render_template(
+        "admin_edit_collaboration.html",
+        collaboration=collaboration
+    )
+
+
+# =========================================================
+# ADMIN - DELETE COLLABORATION
+# =========================================================
+
+@app.route(
+    "/admin/collaboration/<int:collaboration_id>/delete",
+    methods=["POST"]
+)
+def admin_delete_collaboration(collaboration_id):
+
+    access = admin_required()
+
+    if access:
+        return access
+
+    connection = get_database()
+
+    collaboration = connection.execute("""
+        SELECT id
+        FROM collaborations
+        WHERE id = ?
+    """, (collaboration_id,)).fetchone()
+
+    if not collaboration:
+        connection.close()
+        return "Collaboration not found.", 404
+
+    connection.execute("""
+        DELETE FROM collaborations
+        WHERE id = ?
+    """, (collaboration_id,))
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("admin_collaborations"))
 
 
 # =========================================================
