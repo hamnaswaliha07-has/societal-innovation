@@ -423,9 +423,10 @@ def send_reset_code_email(to_email, code):
     if resend_api_key:
         try:
             import urllib.request
+            import urllib.error
             import json
             req_data = json.dumps({
-                "from": "Societal Innovation <onboarding@resend.dev>",
+                "from": "onboarding@resend.dev",
                 "to": [to_email],
                 "subject": subject,
                 "html": html_body
@@ -435,7 +436,8 @@ def send_reset_code_email(to_email, code):
                 data=req_data,
                 headers={
                     "Authorization": f"Bearer {resend_api_key}",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "User-Agent": "SocietalInnovation/1.0"
                 },
                 method="POST"
             )
@@ -443,8 +445,13 @@ def send_reset_code_email(to_email, code):
                 if resp.status in (200, 201):
                     print(f"[Resend API] Successfully delivered OTP email to {to_email}")
                     return True, "Email sent successfully."
+        except urllib.error.HTTPError as e:
+            err_msg = e.read().decode("utf-8", errors="ignore")
+            print(f"[Resend API Error {e.status}] {err_msg}")
+            return False, f"Resend API error: {err_msg}"
         except Exception as e:
             print(f"[Resend API Warning] {e}")
+            return False, f"Resend API connection error: {e}"
 
     # ---------------------------------------------------------
     # METHOD 2: Brevo HTTP API (Port 443 - Never blocked by Render / cloud hosts)
