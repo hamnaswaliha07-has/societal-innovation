@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -24,6 +24,63 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # =========================================================
 # DATABASE ADAPTER (PostgreSQL with SQLite Fallback)
 # =========================================================
+
+class RowWrapper:
+    def __init__(self, data, description=None):
+        if isinstance(data, dict):
+            self._dict = dict(data)
+            self._list = list(data.values())
+        elif hasattr(data, "keys"):
+            self._dict = {k: data[k] for k in data.keys()}
+            self._list = [data[k] for k in data.keys()]
+        elif isinstance(data, (tuple, list)):
+            self._list = list(data)
+            if description:
+                col_names = [d[0] for d in description]
+                self._dict = dict(zip(col_names, self._list))
+            else:
+                self._dict = {i: v for i, v in enumerate(self._list)}
+        else:
+            self._dict = {}
+            self._list = []
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._list[key]
+        return self._dict[key]
+
+    def __setitem__(self, key, value):
+        self._dict[key] = value
+
+    def get(self, key, default=None):
+        return self._dict.get(key, default)
+
+    def keys(self):
+        return self._dict.keys()
+
+    def values(self):
+        return self._dict.values()
+
+    def items(self):
+        return self._dict.items()
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __getattr__(self, name):
+        if "_dict" in self.__dict__ and name in self._dict:
+            return self._dict[name]
+        raise AttributeError(f"'RowWrapper' object has no attribute '{name}'")
+
+    def __repr__(self):
+        return repr(self._dict)
+
 
 class DatabaseCursorWrapper:
     def __init__(self, cursor, is_postgres=True):
@@ -40,14 +97,22 @@ class DatabaseCursorWrapper:
             self._cursor.execute(query)
         return self
 
+    def _wrap(self, row):
+        if row is None:
+            return None
+        return RowWrapper(row, self._cursor.description)
+
     def fetchone(self):
-        return self._cursor.fetchone()
+        row = self._cursor.fetchone()
+        return self._wrap(row)
 
     def fetchall(self):
-        return self._cursor.fetchall()
+        rows = self._cursor.fetchall()
+        return [self._wrap(r) for r in rows]
 
     def fetchmany(self, size=None):
-        return self._cursor.fetchmany(size) if size else self._cursor.fetchmany()
+        rows = self._cursor.fetchmany(size) if size else self._cursor.fetchmany()
+        return [self._wrap(r) for r in rows]
 
     @property
     def rowcount(self):
@@ -61,7 +126,8 @@ class DatabaseCursorWrapper:
         return self._cursor.close()
 
     def __iter__(self):
-        return iter(self._cursor)
+        for row in self._cursor:
+            yield self._wrap(row)
 
 
 class DatabaseConnectionWrapper:
@@ -1892,54 +1958,55 @@ def admin_dashboard():
 
     connection = get_database()
 
-    total_users = connection.execute(
-        "SELECT COUNT(*) FROM users"
-    ).fetchone()[0]
+    u_res = connection.execute("SELECT COUNT(*) FROM users").fetchone()
+    total_users = u_res[0] if u_res else 0
 
-    total_challenges = connection.execute(
-        "SELECT COUNT(*) FROM submissions"
-    ).fetchone()[0]
+    c_res = connection.execute("SELECT COUNT(*) FROM submissions").fetchone()
+    total_challenges = c_res[0] if c_res else 0
 
-    total_projects = connection.execute(
-        "SELECT COUNT(*) FROM university_projects"
-    ).fetchone()[0]
+    p_res = connection.execute("SELECT COUNT(*) FROM university_projects").fetchone()
+    total_projects = p_res[0] if p_res else 0
 
-    total_collaborations = connection.execute(
-        "SELECT COUNT(*) FROM collaborations"
-    ).fetchone()[0]
+    col_res = connection.execute("SELECT COUNT(*) FROM collaborations").fetchone()
+    total_collaborations = col_res[0] if col_res else 0
 
     # Actual status used when a citizen submits a problem.
-    submitted_challenges = connection.execute("""
+    s_res = connection.execute("""
         SELECT COUNT(*)
         FROM submissions
         WHERE status = 'Submitted'
-    """).fetchone()[0]
+    """).fetchone()
+    submitted_challenges = s_res[0] if s_res else 0
 
     # Actual status used when university accepts.
-    accepted_challenges = connection.execute("""
+    a_res = connection.execute("""
         SELECT COUNT(*)
         FROM submissions
         WHERE status = 'Accepted by University'
-    """).fetchone()[0]
+    """).fetchone()
+    accepted_challenges = a_res[0] if a_res else 0
 
     # Actual status used when university declines.
-    denied_challenges = connection.execute("""
+    d_res = connection.execute("""
         SELECT COUNT(*)
         FROM submissions
         WHERE status = 'Declined by University'
-    """).fetchone()[0]
+    """).fetchone()
+    denied_challenges = d_res[0] if d_res else 0
 
-    pending_collaborations = connection.execute("""
+    pen_res = connection.execute("""
         SELECT COUNT(*)
         FROM collaborations
         WHERE status = 'Pending'
-    """).fetchone()[0]
+    """).fetchone()
+    pending_collaborations = pen_res[0] if pen_res else 0
 
-    accepted_collaborations = connection.execute("""
+    ac_res = connection.execute("""
         SELECT COUNT(*)
         FROM collaborations
         WHERE status = 'Accepted'
-    """).fetchone()[0]
+    """).fetchone()
+    accepted_collaborations = ac_res[0] if ac_res else 0
 
     # Admin messages
     admin_messages = connection.execute("""

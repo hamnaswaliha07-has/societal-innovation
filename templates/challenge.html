@@ -211,7 +211,7 @@ Challenge Details | Societal Innovation Portal
             </h2>
 
             <img
-                src="/uploads/{{ submission['photo'] }}"
+                src="{{ url_for('uploaded_file', filename=submission['photo']) }}"
                 alt="Citizen uploaded photo"
                 style="
                     max-width: 100%;
