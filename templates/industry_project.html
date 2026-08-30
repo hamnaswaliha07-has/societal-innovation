@@ -41,6 +41,43 @@
         {{ project["challenge_district"] }}
     </p>
 
+    {% if project["challenge_photo"] %}
+    <p>
+        <strong>📷 Submitted Photo:</strong>
+    </p>
+    <img
+        src="{{ url_for('uploaded_file', filename=project['challenge_photo']) }}"
+        alt="Citizen Challenge Photo"
+        style="
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        "
+    >
+    {% endif %}
+
+    {% if project["challenge_video"] %}
+    <p>
+        <strong>🎥 Submitted Video:</strong>
+    </p>
+    <video
+        controls
+        style="
+            width: 100%;
+            max-width: 700px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        "
+    >
+        <source
+            src="{{ url_for('uploaded_file', filename=project['challenge_video']) }}"
+            type="video/mp4"
+        >
+        Your browser does not support video playback.
+    </video>
+    {% endif %}
+
     <hr>
 
     <h2>University Project</h2>
