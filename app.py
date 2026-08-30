@@ -399,15 +399,6 @@ create_database()
 # =========================================================
 
 def send_reset_code_email(to_email, code):
-    mail_server = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-    try:
-        mail_port = int(os.environ.get("MAIL_PORT", 587))
-    except (ValueError, TypeError):
-        mail_port = 587
-    mail_username = (os.environ.get("MAIL_USERNAME") or "Hamnaswaliha07@gmail.com").strip()
-    mail_password = (os.environ.get("MAIL_PASSWORD") or "mbyhoahhfvvreuvs").strip().replace(" ", "")
-    mail_sender = (os.environ.get("MAIL_DEFAULT_SENDER") or mail_username or "Hamnaswaliha07@gmail.com").strip()
-
     subject = f"Your Password Reset Code: {code} - Societal Innovation Portal"
 
     html_body = f"""
@@ -424,6 +415,78 @@ def send_reset_code_email(to_email, code):
         <p style="color: #94a3b8; font-size: 12px; text-align: center;">Societal Innovation Portal &copy; All rights reserved.</p>
     </div>
     """
+
+    # ---------------------------------------------------------
+    # METHOD 1: Resend HTTP API (Port 443 - Never blocked by Render / cloud hosts)
+    # ---------------------------------------------------------
+    resend_api_key = (os.environ.get("RESEND_API_KEY") or "").strip()
+    if resend_api_key:
+        try:
+            import urllib.request
+            import json
+            req_data = json.dumps({
+                "from": "Societal Innovation <onboarding@resend.dev>",
+                "to": [to_email],
+                "subject": subject,
+                "html": html_body
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.resend.com/emails",
+                data=req_data,
+                headers={
+                    "Authorization": f"Bearer {resend_api_key}",
+                    "Content-Type": "application/json"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status in (200, 201):
+                    print(f"[Resend API] Successfully delivered OTP email to {to_email}")
+                    return True, "Email sent successfully."
+        except Exception as e:
+            print(f"[Resend API Warning] {e}")
+
+    # ---------------------------------------------------------
+    # METHOD 2: Brevo HTTP API (Port 443 - Never blocked by Render / cloud hosts)
+    # ---------------------------------------------------------
+    brevo_api_key = (os.environ.get("BREVO_API_KEY") or "").strip()
+    if brevo_api_key:
+        try:
+            import urllib.request
+            import json
+            req_data = json.dumps({
+                "sender": {"name": "Societal Innovation Portal", "email": "Hamnaswaliha07@gmail.com"},
+                "to": [{"email": to_email}],
+                "subject": subject,
+                "htmlContent": html_body
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.brevo.com/v3/smtp/email",
+                data=req_data,
+                headers={
+                    "api-key": brevo_api_key,
+                    "Content-Type": "application/json"
+                },
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status in (200, 201):
+                    print(f"[Brevo API] Successfully delivered OTP email to {to_email}")
+                    return True, "Email sent successfully."
+        except Exception as e:
+            print(f"[Brevo API Warning] {e}")
+
+    # ---------------------------------------------------------
+    # METHOD 3: Standard SMTP (Gmail, Outlook, etc.)
+    # ---------------------------------------------------------
+    mail_server = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
+    try:
+        mail_port = int(os.environ.get("MAIL_PORT", 587))
+    except (ValueError, TypeError):
+        mail_port = 587
+    mail_username = (os.environ.get("MAIL_USERNAME") or "Hamnaswaliha07@gmail.com").strip()
+    mail_password = (os.environ.get("MAIL_PASSWORD") or "mbyhoahhfvvreuvs").strip().replace(" ", "")
+    mail_sender = (os.environ.get("MAIL_DEFAULT_SENDER") or mail_username or "Hamnaswaliha07@gmail.com").strip()
 
     if not mail_username or not mail_password or "your-email" in mail_username:
         print("\n" + "=" * 60)
@@ -452,7 +515,7 @@ def send_reset_code_email(to_email, code):
         print(f"[Email Success] Sent OTP verification code to {to_email}")
         return True, "Email sent successfully."
     except Exception as e:
-        print(f"\n[Email Error] Failed to send email to {to_email}: {e}")
+        print(f"\n[Email Error] Failed to send email via SMTP to {to_email}: {e}")
         print(f"[FALLBACK OTP CODE] For testing, OTP for {to_email} is: {code}\n")
         return False, str(e)
 
