@@ -35,6 +35,21 @@
         </div>
 
 
+        {% if success %}
+
+        <div style="
+            background: #dcfce7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #166534;
+            font-weight: 500;
+        ">
+            {{ success }}
+        </div>
+
+        {% endif %}
+
         {% if error %}
 
         <div style="
