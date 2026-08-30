@@ -404,9 +404,9 @@ def send_reset_code_email(to_email, code):
         mail_port = int(os.environ.get("MAIL_PORT", 587))
     except (ValueError, TypeError):
         mail_port = 587
-    mail_username = (os.environ.get("MAIL_USERNAME") or "").strip()
-    mail_password = (os.environ.get("MAIL_PASSWORD") or "").strip().replace(" ", "")
-    mail_sender = (os.environ.get("MAIL_DEFAULT_SENDER") or mail_username or "noreply@societalinnovation.com").strip()
+    mail_username = (os.environ.get("MAIL_USERNAME") or "Hamnaswaliha07@gmail.com").strip()
+    mail_password = (os.environ.get("MAIL_PASSWORD") or "mbyhoahhfvvreuvs").strip().replace(" ", "")
+    mail_sender = (os.environ.get("MAIL_DEFAULT_SENDER") or mail_username or "Hamnaswaliha07@gmail.com").strip()
 
     subject = f"Your Password Reset Code: {code} - Societal Innovation Portal"
 
