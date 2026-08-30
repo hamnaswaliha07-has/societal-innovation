@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory
 import sqlite3
-import psycopg2
-from psycopg2.extras import RealDictCursor
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+    RealDictCursor = None
 import os
 import uuid
 import smtplib
@@ -11,6 +15,28 @@ import random
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+try:
+    from dotenv import load_dotenv
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    load_dotenv(os.path.join(basedir, ".env"))
+except Exception:
+    pass
+
+# Direct fallback parser for .env if python-dotenv is not installed or failed
+_env_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), ".env")
+if os.path.exists(_env_file):
+    try:
+        with open(_env_file, "r", encoding="utf-8") as _f:
+            for _line in _f:
+                _line = _line.strip()
+                if _line and not _line.startswith("#") and "=" in _line:
+                    _k, _v = _line.split("=", 1)
+                    _k = _k.strip()
+                    _v = _v.strip().strip('"').strip("'")
+                    if _k not in os.environ:
+                        os.environ[_k] = _v
+    except Exception:
+        pass
 
 app = Flask(__name__)
 
@@ -186,7 +212,8 @@ def get_database():
         return DatabaseConnectionWrapper(connection, is_postgres=True)
     else:
         # Fallback to local SQLite for local testing if DATABASE_URL is not set
-        connection = sqlite3.connect("database.db", timeout=10)
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database.db")
+        connection = sqlite3.connect(db_path, timeout=10)
         connection.row_factory = sqlite3.Row
         return DatabaseConnectionWrapper(connection, is_postgres=False)
 
@@ -373,10 +400,13 @@ create_database()
 
 def send_reset_code_email(to_email, code):
     mail_server = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
-    mail_port = int(os.environ.get("MAIL_PORT", 587))
-    mail_username = os.environ.get("MAIL_USERNAME")
-    mail_password = os.environ.get("MAIL_PASSWORD")
-    mail_sender = os.environ.get("MAIL_DEFAULT_SENDER", mail_username or "noreply@societalinnovation.com")
+    try:
+        mail_port = int(os.environ.get("MAIL_PORT", 587))
+    except (ValueError, TypeError):
+        mail_port = 587
+    mail_username = (os.environ.get("MAIL_USERNAME") or "").strip()
+    mail_password = (os.environ.get("MAIL_PASSWORD") or "").strip().replace(" ", "")
+    mail_sender = (os.environ.get("MAIL_DEFAULT_SENDER") or mail_username or "noreply@societalinnovation.com").strip()
 
     subject = f"Your Password Reset Code: {code} - Societal Innovation Portal"
 
@@ -395,9 +425,11 @@ def send_reset_code_email(to_email, code):
     </div>
     """
 
-    if not mail_username or not mail_password:
-        print(f"[DEVELOPMENT INFO] Verification code for {to_email}: {code}")
-        return True, "Code generated (SMTP not configured, logged in server logs)."
+    if not mail_username or not mail_password or "your-email" in mail_username:
+        print("\n" + "=" * 60)
+        print(f"[DEVELOPMENT MODE] OTP Code for {to_email}: {code}")
+        print("=" * 60 + "\n")
+        return True, "Code generated (SMTP not configured, OTP printed in terminal logs)."
 
     try:
         msg = MIMEMultipart("alternative")
@@ -408,14 +440,20 @@ def send_reset_code_email(to_email, code):
         part = MIMEText(html_body, "html")
         msg.attach(part)
 
-        server = smtplib.SMTP(mail_server, mail_port, timeout=10)
-        server.starttls()
+        if mail_port == 465:
+            server = smtplib.SMTP_SSL(mail_server, mail_port, timeout=12)
+        else:
+            server = smtplib.SMTP(mail_server, mail_port, timeout=12)
+            server.starttls()
+
         server.login(mail_username, mail_password)
         server.sendmail(mail_sender, [to_email], msg.as_string())
         server.quit()
+        print(f"[Email Success] Sent OTP verification code to {to_email}")
         return True, "Email sent successfully."
     except Exception as e:
-        print(f"[Email Error] Failed to send email to {to_email}: {e}")
+        print(f"\n[Email Error] Failed to send email to {to_email}: {e}")
+        print(f"[FALLBACK OTP CODE] For testing, OTP for {to_email} is: {code}\n")
         return False, str(e)
 
 
@@ -658,9 +696,12 @@ def forgot_password():
         connection.close()
 
         # Send email with verification code
-        send_reset_code_email(email, code)
+        sent_ok, send_msg = send_reset_code_email(email, code)
 
-        session["reset_msg"] = f"A 6-digit verification code has been sent to {email}. Please enter it below."
+        if sent_ok:
+            session["reset_msg"] = f"A 6-digit verification code has been sent to {email}. Please check your inbox (and spam folder)."
+        else:
+            session["reset_msg"] = f"Verification code generated! (SMTP delivery notice: {send_msg}. For local testing, your 6-digit code has also been logged in the terminal.)"
 
         return redirect(
             url_for("reset_password", email=email)
